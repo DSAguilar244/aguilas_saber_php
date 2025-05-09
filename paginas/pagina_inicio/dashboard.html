@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - Maky System</title>
+    <link rel="icon" href="../../static/img/fondo_aguilas_saber.png" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="bg-dark text-white p-3" id="sidebar">
+            <div class="text-center mb-4">
+                <img src="../../static/img/fondo_aguilas_saber.png" alt="Logo Maky System" class="img-fluid mb-2" style="max-height: 80px;">
+                <h4>Maky System</h4>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="../../paginas/pagina_inicio/dashboard.html" class="nav-link active text-white">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                </li>    
+                <li class="nav-item">
+                    <a href="../../paginas/pagina_inicio/home.html" class="nav-link text-white">
+                        <i class="fas fa-home me-2"></i>Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#adminSubmenu" class="nav-link text-white" data-bs-toggle="collapse" aria-expanded="false" aria-controls="adminSubmenu">
+                        <i class="fas fa-cogs me-2"></i>Administración <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse" id="adminSubmenu">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a href="../../paginas/usuarios/listado-usuarios.html" class="nav-link text-white">
+                                    <i class="fas fa-users me-2"></i>Usuarios
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/recursos/recursos.html" class="nav-link text-white">
+                                    <i class="fas fa-boxes me-2"></i>Recursos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/prestamos/prestamos.html" class="nav-link text-white">
+                                    <i class="fas fa-archive me-2"></i>Préstamos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/devoluciones/devoluciones.html" class="nav-link text-white">
+                                    <i class="fas fa-undo me-2"></i>Devoluciones
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/productos/listado-productos.html" class="nav-link text-white">
+                                    <i class="fas fa-shopping-cart me-2"></i>Productos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/roles/listado-roles.html" class="nav-link text-white">
+                                    <i class="fas fa-user-shield me-2"></i>Rol
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/roles/gestion-permisos.html" class="nav-link text-white">
+                                    <i class="fas fa-key me-2"></i>Permisos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/recursos/estado-recursos.html" class="nav-link text-white">
+                                    <i class="fas fa-chart-line me-2"></i>Estado de Recursos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/productos/ingreso-productos.html" class="nav-link text-white">
+                                    <i class="fas fa-arrow-up me-2"></i>Ingresos
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <a href="../../index.html" class="btn btn-danger w-100">Cerrar sesión</a>
+        </div>
+
+        <!-- Content -->
+        <div id="content" class="flex-grow-1">
+            <h1 class="text-center mb-4">Dashboard - Maky System</h1>
+            <div class="container">
+                <div class="row g-4">
+                    <!-- Tarjeta 1: Gestión de Productos -->
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white text-center">
+                                Gestión de Productos
+                            </div>
+                            <div class="card-body">
+                                <canvas id="gestionProductosChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tarjeta 2: Productos por Mes -->
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white text-center">
+                                Productos por Mes
+                            </div>
+                            <div class="card-body">
+                                <canvas id="productosPorMesChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Tarjeta 3: Estado de Recursos -->
+                    <div class="col-lg-4 col-md-6 col-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-info text-white text-center">
+                                Estado de Recursos
+                            </div>
+                            <div class="card-body">
+                                <canvas id="estadoRecursosChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-danger text-white text-center py-3 mt-auto">
+            © 2024 Maky System. Todos los derechos reservados.
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Gráfico 1: Gestión de productos, devoluciones e ingresos
+        const gestionProductosCtx = document.getElementById('gestionProductosChart').getContext('2d');
+        new Chart(gestionProductosCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Productos', 'Devoluciones', 'Ingresos'],
+                datasets: [{
+                    label: 'Cantidad',
+                    data: [50, 20, 70],
+                    backgroundColor: ['#ff6384', '#36a2eb', '#ffce56'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                },
+            }
+        });
+
+        // Gráfico 2: Productos por mes
+        const productosPorMesCtx = document.getElementById('productosPorMesChart').getContext('2d');
+        new Chart(productosPorMesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo'],
+                datasets: [{
+                    label: 'Cantidad de Productos',
+                    data: [30, 40, 35, 50, 60],
+                    backgroundColor: '#4bc0c0',
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                },
+            }
+        });
+
+        // Gráfico 3: Estado de recursos
+        const estadoRecursosCtx = document.getElementById('estadoRecursosChart').getContext('2d');
+        new Chart(estadoRecursosCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Bueno', 'Deteriorado', 'Malo'],
+                datasets: [{
+                    label: 'Estado de Recursos',
+                    data: [70, 20, 10],
+                    backgroundColor: ['#2ecc71', '#f1c40f', '#e74c3c'],
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: true },
+                },
+            }
+        });
+    </script>
+</body>
+</html>

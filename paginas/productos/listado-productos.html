@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos</title>
+    <link rel="icon" href="../../static/img/fondo_aguilas_saber.png" type="image/x-icon">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="productos_lista.css" rel="stylesheet">
+</head>
+<body>
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <div class="bg-dark text-white p-3" id="sidebar">
+            <div class="text-center mb-4">
+                <img src="../../static/img/fondo_aguilas_saber.png" alt="Logo Maky System" class="img-fluid mb-2" style="max-height: 80px;">
+                <h4>Maky System</h4>
+            </div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a href="../../paginas/pagina_inicio/dashboard.html" class="nav-link text-white">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="../../paginas/pagina_inicio/home.html" class="nav-link text-white">
+                        <i class="fas fa-home me-2"></i>Inicio
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#adminSubmenu" class="nav-link text-white" data-bs-toggle="collapse" aria-expanded="false" aria-controls="adminSubmenu">
+                        <i class="fas fa-cogs me-2"></i>Administración <i class="fas fa-chevron-down ms-auto"></i>
+                    </a>
+                    <div class="collapse" id="adminSubmenu">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a href="../../paginas/usuarios/listado-usuarios.html" class="nav-link text-white">
+                                    <i class="fas fa-users me-2"></i>Usuarios
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/recursos/recursos.html" class="nav-link text-white">
+                                    <i class="fas fa-boxes me-2"></i>Recursos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/prestamos/prestamos.html" class="nav-link text-white">
+                                    <i class="fas fa-archive me-2"></i>Préstamos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/devoluciones/devoluciones.html" class="nav-link text-white">
+                                    <i class="fas fa-undo me-2"></i>Devoluciones
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/productos/listado-productos.html" class="nav-link active text-white">
+                                    <i class="fas fa-shopping-cart me-2"></i>Productos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/roles/listado-roles.html" class="nav-link text-white">
+                                    <i class="fas fa-user-shield me-2"></i>Rol
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/roles/gestion-permisos.html" class="nav-link text-white">
+                                    <i class="fas fa-key me-2"></i>Permisos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/recursos/estado-recursos.html" class="nav-link text-white">
+                                    <i class="fas fa-chart-line me-2"></i>Estado de Recursos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="../../paginas/productos/ingreso-productos.html" class="nav-link text-white">
+                                    <i class="fas fa-arrow-up me-2"></i>Ingresos
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+            <hr class="text-secondary">
+            <a href="../../index.html" class="btn btn-danger w-100">Cerrar sesión</a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow-1 p-4 bg-light">
+            <h1 class="h4 mb-2">Entrada y Salida de Productos</h1>
+            <hr style="margin: 0.5rem 0; border: 1px solid rgba(0, 0, 0, 0.1); box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
+            <p class="mt-1">Llenar los campos para registrar entrada/salida de productos</p>
+            <button class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addProductModal">Registrar</button>
+
+            <!-- Modal para Agregar o Editar Producto -->
+            <div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="addProductModalLabel">Agregar Producto</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="addProductForm">
+                                <div class="mb-3">
+                                    <label for="productName" class="form-label">Nombre del Producto</label>
+                                    <input type="text" class="form-control" id="productName" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="productStatus" class="form-label">Estado</label>
+                                    <select class="form-select" id="productStatus">
+                                        <option value="Activo">Activo</option>
+                                        <option value="Inactivo">Inactivo</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="entryDate" class="form-label">Fecha de Entrada</label>
+                                    <input type="date" class="form-control" id="entryDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="exitDate" class="form-label">Fecha de Salida</label>
+                                    <input type="date" class="form-control" id="exitDate" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="quantity" class="form-label">Cantidad</label>
+                                    <input type="number" class="form-control" id="quantity" required>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="button" class="btn btn-primary" id="saveProductBtn">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Confirmación Eliminar -->
+            <div class="modal fade" id="deleteProductModal" tabindex="-1" aria-labelledby="deleteProductModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="deleteProductModalLabel">¿Estás seguro de eliminar este producto?</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>Esta acción no se puede deshacer.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal de Eliminación Exitosa -->
+            <div class="modal fade" id="successDeleteModal" tabindex="-1" aria-labelledby="successDeleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="successDeleteModalLabel">Producto Eliminado</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>El producto se ha eliminado satisfactoriamente.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mb-3">
+                <!-- Selector de Mostrar -->
+                <div class="d-flex align-items-center">
+                    <label for="itemsPerPage" class="me-2">Mostrar:</label>
+                    <select id="itemsPerPage" class="form-select w-auto">
+                        <option value="10">10 Productos</option>
+                        <option value="20">20 Productos</option>
+                    </select>
+                </div>
+                
+                
+                <div class="input-group w-50">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Buscar productos" oninput="searchResources()">
+                    <button class="btn btn-outline-secondary" id="searchButton" onclick="searchResources()">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            
+
+
+            <table id="productTable" class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Nombre del producto</th>
+                        <th>Estado</th>
+                        <th>Fecha de Entrada</th>
+                        <th>Fecha de Salida</th>
+                        <th>Cantidad</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    
+                </tbody>
+            </table>
+
+            
+            <nav aria-label="Paginación">
+                <ul class="pagination justify-content-center" id="pagination">
+                    <!-- Paginación dinámica se añadirá aquí -->
+                </ul>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-danger text-white text-center py-3 mt-auto">
+        © 2024 Maky System. Todos los derechos reservados.
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let editingRow = null; 
+let products = [
+    {
+        name: "Producto A",
+        status: "Activo",
+        entryDate: "2024-12-23",
+        exitDate: "2024-12-24",
+        quantity: 10
+    },
+    {
+        name: "Producto B",
+        status: "Inactivo",
+        entryDate: "2024-12-22",
+        exitDate: "2024-12-23",
+        quantity: 5
+    },
+    {
+        name: "Producto C",
+        status: "Activo",
+        entryDate: "2024-12-21",
+        exitDate: "2024-12-22",
+        quantity: 12
+    },
+    {
+        name: "Producto D",
+        status: "Inactivo",
+        entryDate: "2024-12-20",
+        exitDate: "2024-12-21",
+        quantity: 8
+    },
+    {
+        name: "Producto E",
+        status: "Activo",
+        entryDate: "2024-12-19",
+        exitDate: "2024-12-20",
+        quantity: 15
+    },
+    {
+        name: "Producto F",
+        status: "Inactivo",
+        entryDate: "2024-12-18",
+        exitDate: "2024-12-19",
+        quantity: 6
+    },
+    {
+        name: "Producto G",
+        status: "Activo",
+        entryDate: "2024-12-17",
+        exitDate: "2024-12-18",
+        quantity: 20
+    },
+    {
+        name: "Producto H",
+        status: "Inactivo",
+        entryDate: "2024-12-16",
+        exitDate: "2024-12-17",
+        quantity: 4
+    },
+    {
+        name: "Producto I",
+        status: "Activo",
+        entryDate: "2024-12-15",
+        exitDate: "2024-12-16",
+        quantity: 25
+    },
+    {
+        name: "Producto J",
+        status: "Inactivo",
+        entryDate: "2024-12-14",
+        exitDate: "2024-12-15",
+        quantity: 30
+    },
+    {
+        name: "Producto K",
+        status: "Activo",
+        entryDate: "2024-12-13",
+        exitDate: "2024-12-14",
+        quantity: 10
+    },
+    {
+        name: "Producto L",
+        status: "Inactivo",
+        entryDate: "2024-12-12",
+        exitDate: "2024-12-13",
+        quantity: 7
+    },
+    {
+        name: "Producto M",
+        status: "Activo",
+        entryDate: "2024-12-11",
+        exitDate: "2024-12-12",
+        quantity: 18
+    },
+    {
+        name: "Producto N",
+        status: "Inactivo",
+        entryDate: "2024-12-10",
+        exitDate: "2024-12-11",
+        quantity: 13
+    },
+    {
+        name: "Producto O",
+        status: "Activo",
+        entryDate: "2024-12-09",
+        exitDate: "2024-12-10",
+        quantity: 9
+    },
+    {
+        name: "Producto P",
+        status: "Inactivo",
+        entryDate: "2024-12-08",
+        exitDate: "2024-12-09",
+        quantity: 14
+    },
+    {
+        name: "Producto Q",
+        status: "Activo",
+        entryDate: "2024-12-07",
+        exitDate: "2024-12-08",
+        quantity: 11
+    },
+    {
+        name: "Producto R",
+        status: "Inactivo",
+        entryDate: "2024-12-06",
+        exitDate: "2024-12-07",
+        quantity: 16
+    },
+    {
+        name: "Producto S",
+        status: "Activo",
+        entryDate: "2024-12-05",
+        exitDate: "2024-12-06",
+        quantity: 22
+    },
+    {
+        name: "Producto T",
+        status: "Inactivo",
+        entryDate: "2024-12-04",
+        exitDate: "2024-12-05",
+        quantity: 3
+    }
+]; 
+    
+        
+        document.getElementById('saveProductBtn').addEventListener('click', function() {
+            const productName = document.getElementById('productName').value;
+            const productStatus = document.getElementById('productStatus').value;
+            const entryDate = document.getElementById('entryDate').value;
+            const exitDate = document.getElementById('exitDate').value;
+            const quantity = document.getElementById('quantity').value;
+    
+            if (productName && productStatus && entryDate && exitDate && quantity) {
+                const product = {
+                    name: productName,
+                    status: productStatus,
+                    entryDate,
+                    exitDate,
+                    quantity
+                };
+    
+                if (editingRow) {
+                    
+                    const index = editingRow.rowIndex - 1;
+                    products[index] = product;
+                    editingRow.cells[1].innerText = productName;
+                    editingRow.cells[2].innerText = productStatus;
+                    editingRow.cells[3].innerText = entryDate;
+                    editingRow.cells[4].innerText = exitDate;
+                    editingRow.cells[5].innerText = quantity;
+                    editingRow = null; 
+                } else {
+                    
+                    products.push(product);
+                }
+    
+                updateTable();
+                document.getElementById('addProductForm').reset();
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
+                modal.hide();
+            } else {
+        const errorMessage = document.getElementById('errorMessage');
+        errorMessage.classList.remove('d-none'); 
+    }
+});
+    
+        
+        function updateTable() {
+            const tableBody = document.getElementById('productTableBody');
+            const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value);
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchQuery));
+    
+            const start = (currentPage - 1) * itemsPerPage;
+            const paginatedProducts = filteredProducts.slice(start, start + itemsPerPage);
+    
+            tableBody.innerHTML = paginatedProducts.map((product, index) => ` 
+                <tr>
+                    <td>${start + index + 1}</td>
+                    <td>${product.name}</td>
+                    <td>${product.status}</td>
+                    <td>${product.entryDate}</td>
+                    <td>${product.exitDate}</td>
+                    <td>${product.quantity}</td>
+                    <td><button class="btn btn-sm edit-btn"><i class="fas fa-edit text-primary btn-icon"></i></button></td>
+                    <td><button class="btn btn-sm delete-btn"><i class="fas fa-trash-alt text-danger btn-icon"></i></button></td>
+                </tr>
+            `).join('');
+    
+            updatePagination(filteredProducts.length, itemsPerPage);
+        }
+    
+        
+        
+let currentPage = 1;
+
+document.getElementById('itemsPerPage').addEventListener('change', function() {
+    currentPage = 1; 
+    updateTable();
+});
+
+function updateTable() {
+    const tableBody = document.getElementById('productTableBody');
+    const itemsPerPage = parseInt(document.getElementById('itemsPerPage').value);
+    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+    
+    const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchQuery));
+
+    const start = (currentPage - 1) * itemsPerPage;
+    const paginatedProducts = filteredProducts.slice(start, start + itemsPerPage);
+
+    tableBody.innerHTML = paginatedProducts.map((product, index) => `
+        <tr>
+            <td>${start + index + 1}</td>
+            <td>${product.name}</td>
+            <td>${product.status}</td>
+            <td>${product.entryDate}</td>
+            <td>${product.exitDate}</td>
+            <td>${product.quantity}</td>
+            <td><button class="btn btn-sm edit-btn"><i class="fas fa-edit text-primary btn-icon"></i></button></td>
+            <td><button class="btn btn-sm delete-btn"><i class="fas fa-trash-alt text-danger btn-icon"></i></button></td>
+        </tr>
+    `).join('');
+
+    updatePagination(filteredProducts.length, itemsPerPage);
+}
+
+function updatePagination(totalItems, itemsPerPage) {
+    const pageCount = Math.ceil(totalItems / itemsPerPage);
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+
+    for (let i = 1; i <= pageCount; i++) {
+        const pageItem = document.createElement('li');
+        pageItem.classList.add('page-item');
+        pageItem.innerHTML = `<a class="page-link" href="#" onclick="goToPage(${i})">${i}</a>`;
+        pagination.appendChild(pageItem);
+    }
+}
+
+function goToPage(pageNumber) {
+    currentPage = pageNumber;
+    updateTable();
+}
+
+document.getElementById('searchInput').addEventListener('input', updateTable);
+
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.edit-btn')) {
+        const row = e.target.closest('tr');
+        const index = row.rowIndex - 1;
+        const product = products[index];
+        document.getElementById('productName').value = product.name;
+        document.getElementById('productStatus').value = product.status;
+        document.getElementById('entryDate').value = product.entryDate;
+        document.getElementById('exitDate').value = product.exitDate;
+        document.getElementById('quantity').value = product.quantity;
+        editingRow = row;
+        const modal = new bootstrap.Modal(document.getElementById('addProductModal'));
+        modal.show();
+    }
+});
+
+document.addEventListener('click', function(e) {
+    if (e.target.closest('.delete-btn')) {
+        const row = e.target.closest('tr');
+        const index = row.rowIndex - 1;
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteProductModal'));
+        
+        deleteModal.show();
+        
+        document.getElementById('confirmDeleteBtn').onclick = function() {
+            products.splice(index, 1);
+            updateTable();
+            deleteModal.hide();
+
+            const successModal = new bootstrap.Modal(document.getElementById('successDeleteModal'));
+            successModal.show();
+            
+            setTimeout(function() {
+                successModal.hide();
+            }, 2000);
+        };
+    }
+});
+
+updateTable(); 
+    </script>    
