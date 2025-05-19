@@ -14,7 +14,7 @@ if (strlen($contraseña) < 6) {
 
 // Simulación de login exitoso
 if ($usuario === 'admin' && $contraseña === '123456') {
-    header("Location: paginas/pagina_inicio/home.html");
+    header("Location: paginas/pagina_inicio/home.php");
     exit;
 } else {
     header("Location: index.php?mensaje=Usuario+o+contraseña+incorrectos.&tipo=danger");
