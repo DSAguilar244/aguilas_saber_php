@@ -65,7 +65,7 @@ $fin = min($inicio + $porPagina, $totalPrestamos);
             </li>
         </ul>
         <hr class="text-secondary">
-        <a href="../../index.html" class="btn btn-danger w-100">Cerrar sesión</a>
+        <a href="../../index.php" class="btn btn-danger w-100">Cerrar sesión</a>
     </div>
 
     <div class="flex-grow-1 p-4 bg-light d-flex flex-column">

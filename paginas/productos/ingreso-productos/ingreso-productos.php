@@ -59,7 +59,7 @@ $ingresosPagina = array_slice($_SESSION["ingresos"], $inicio, $ingresosPorPagina
             </li>
         </ul>
         <hr class="text-secondary" />
-        <a href="../../../index.html" class="btn btn-danger w-100">Cerrar sesión</a>
+        <a href="../../../index.php" class="btn btn-danger w-100">Cerrar sesión</a>
     </div>
 
     <!-- Main Content -->
