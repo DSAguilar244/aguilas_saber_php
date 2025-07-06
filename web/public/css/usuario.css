@@ -1,0 +1,318 @@
+/* Base Layout */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sidebar */
+#sidebar {
+    width: 250px;
+    min-height: 100vh;
+    background-color: #343a40;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+/* Estilos para los enlaces del sidebar */
+#sidebar .nav-link {
+    font-size: 16px;
+    margin: 5px 0;
+    padding: 10px 16px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+/* Efecto de hover */
+#sidebar .nav-link:hover {
+    background-color: #007bff;
+    color: #fff;
+    box-shadow: 0px 4px 8px rgba(0, 123, 255, 0.2);
+    transform: translateX(8px);
+}
+
+/* Efecto en iconos del sidebar */
+#sidebar .nav-link i {
+    margin-right: 12px;
+    transition: transform 0.3s ease;
+}
+
+#sidebar .nav-link:hover i {
+    transform: scale(1.1);
+}
+
+.input-group .btn {
+    height: 39px;
+}
+
+/* Enlace activo */
+#sidebar .nav-link.active {
+    background-color: #dc3545;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0px 4px 12px rgba(220, 53, 69, 0.2);
+    transform: translateX(5px);
+}
+
+/* Enlace no activo al pasar el mouse */
+#sidebar .nav-link:not(.active):hover {
+    background-color: #343a40;
+    color: #f8f9fa;
+}
+
+/* Animación para el encabezado */
+.main-header {
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slideInUp 1s ease-out forwards;
+}
+
+@keyframes slideInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Animación para el párrafo */
+.text-secondary {
+    opacity: 0;
+    transform: translateY(-15px);
+    animation: slideInUp 1s ease-out 0.3s forwards;
+}
+
+/* Animación para la fila */
+.row {
+    opacity: 0;
+    animation: fadeIn 1s ease-out 0.6s forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* Estilos generales para los iconos */
+.btn-icon {
+    font-size: 20px;
+    cursor: pointer; 
+    transition: transform 0.3s ease, color 0.3s ease; 
+}
+
+/* Efecto de hover para los iconos de edición */
+.btn-icon:hover {
+    transform: scale(1.2); 
+}
+
+/* Efecto de hover para el icono de editar */
+.fas.fa-edit:hover {
+    color: #0056b3; 
+}
+
+/* Efecto de hover para el icono de eliminar */
+.fas.fa-trash-alt:hover {
+    color: #dc3545; 
+}
+
+/* Efecto de foco (focus) para accesibilidad */
+.btn-icon:focus {
+    outline: none; 
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); 
+}
+
+/* Efecto de animación en los iconos */
+.fas.fa-edit,
+.fas.fa-trash-alt {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+/* Asegurarse de que los iconos tengan suficiente espacio */
+td {
+    align-content: center; 
+    padding: 10px;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    padding: 20px;
+    background-color: #f8f9fa;
+}
+
+/* Table Styles */
+.table-responsive {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 1rem;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.table th {
+    background-color: #343a40;
+    color: white;
+    padding: 12px;
+}
+
+.table td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+/* Form Controls */
+.form-select {
+    padding: 0.375rem 2.25rem 0.375rem 0.75rem;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    float: right;
+}
+
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+/* Footer */
+#footer {
+    background-color: #dc3545;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    margin-top: auto;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 992px) {
+    #sidebar {
+        width: 200px;
+    }
+
+    .main-content {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .d-flex {
+        flex-direction: column;
+    }
+
+    #sidebar {
+        width: 100%;
+        min-height: auto;
+    }
+
+    .table-responsive {
+        margin-top: 10px;
+    }
+
+    .table thead {
+        display: none;
+    }
+
+    .table tbody tr {
+        display: block;
+        margin-bottom: 1rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .table tbody td {
+        display: block;
+        text-align: right;
+        padding: 0.5rem;
+        position: relative;
+    }
+
+    .table tbody td::before {
+        content: attr(data-label);
+        float: left;
+        font-weight: bold;
+    }
+
+    .form-select {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-content {
+        padding: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .pagination {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .pagination .page-item {
+        margin: 2px;
+    }
+
+    .modal-footer {
+        flex-direction: column;
+    }
+
+    .modal-footer .btn {
+        width: 100%;
+        margin: 5px 0;
+    }
+}
+
+/* Utility Classes */
+.shadow {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.rounded {
+    border-radius: 0.25rem;
+}
+
+/* Status Badges */
+.badge {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: normal;
+}
+
+.badge-disponible {
+    background-color: #28a745;
+    color: white;
+}
+
+.badge-no-disponible {
+    background-color: #dc3545;
+    color: white;
+}
