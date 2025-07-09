@@ -20,6 +20,7 @@
                     class="img-fluid mb-2" style="max-height: 80px;">
                 <h4>Aguilas del Saber</h4>
             </div>
+
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a href="{{ route('dashboard') }}"
@@ -33,6 +34,8 @@
                         <i class="fas fa-home me-2"></i>Inicio
                     </a>
                 </li>
+
+                <!-- Administración -->
                 <li class="nav-item">
                     <a href="#adminSubmenu" class="nav-link text-white" data-bs-toggle="collapse" aria-expanded="false"
                         aria-controls="adminSubmenu">
@@ -46,45 +49,73 @@
                                     <i class="fas fa-users me-2"></i>Usuarios
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('recursos.index') }}"
+                                    class="nav-link text-white {{ request()->routeIs('recursos.*') ? 'active' : '' }}">
+                                    <i class="fas fa-boxes me-2"></i>Recursos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('prestamos.index') }}"
+                                    class="nav-link text-white {{ request()->routeIs('prestamos.*') ? 'active' : '' }}">
+                                    <i class="fas fa-archive me-2"></i>Préstamos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('productos.index') }}"
+                                    class="nav-link text-white {{ request()->routeIs('productos.*') ? 'active' : '' }}">
+                                    <i class="fas fa-shopping-cart me-2"></i>Productos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ route('roles.index') }}"
+                                    class="nav-link text-white {{ request()->routeIs('roles.*') ? 'active' : '' }}">
+                                    <i class="fas fa-user-shield me-2"></i>Roles
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
+
+                <!-- Reportes -->
                 <li class="nav-item">
-                    <a href="{{ route('recursos.index') }}"
-                        class="nav-link text-white {{ request()->routeIs('recursos.*') ? 'active' : '' }}">
-                        <i class="fas fa-boxes me-2"></i>Recursos
+                    <a href="#reportesSubmenu" class="nav-link text-white" data-bs-toggle="collapse" aria-expanded="false"
+                        aria-controls="reportesSubmenu">
+                        <i class="fas fa-file-alt me-2"></i>Reportes <i class="fas fa-chevron-down ms-auto"></i>
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('prestamos.index') }}"
-                        class="nav-link text-white {{ request()->routeIs('prestamos.*') ? 'active' : '' }}">
-                        <i class="fas fa-archive me-2"></i>Préstamos
-                    </a>
-                <li class="nav-item">
-                    <a href="{{ route('productos.index') }}"
-                        class="nav-link text-white {{ request()->routeIs('productos.*') ? 'active' : '' }}">
-                        <i class="fas fa-shopping-cart me-2"></i>Productos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('roles.index') }}"
-                        class="nav-link text-white {{ request()->routeIs('roles.*') ? 'active' : '' }}">
-                        <i class="fas fa-user-shield me-2"></i>Roles
-                    </a>
+                    <div class="collapse" id="reportesSubmenu">
+                        <ul class="nav flex-column ms-3">
+                            <li class="nav-item">
+                                <a href="{{ url('/reporte-productos') }}" target="_blank" class="nav-link text-white">
+                                    <i class="far fa-circle me-2"></i>Productos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url('/reporte-prestamos') }}" target="_blank" class="nav-link text-white">
+                                    <i class="far fa-circle me-2"></i>Préstamos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url('/reporte-usuarios') }}" target="_blank" class="nav-link text-white">
+                                    <i class="far fa-circle me-2"></i>Usuarios
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </li>
             </ul>
-        </div>
-        </li>
-        </ul>
-        <hr class="text-secondary">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="btn btn-danger w-100">Cerrar sesión</button>
-        </form>
-    </div>
 
-    <!-- Main Content -->
-    <div class="flex-grow-1 p-4">
-        @yield('content')
-    </div>
+            <hr class="text-secondary">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="btn btn-danger w-100">Cerrar sesión</button>
+            </form>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow-1 p-4">
+            @yield('content')
+        </div>
     </div>
 
     <footer class="bg-danger text-white text-center py-3">
