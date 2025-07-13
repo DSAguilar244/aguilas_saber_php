@@ -21,9 +21,17 @@ class UsuarioController extends Controller
             'email' => 'required|email|unique:usuarios,email',
             'telefono' => 'required|string',
             'activo' => 'required|boolean',
+            'password' => 'required|string|min:6',
+            'roles' => 'required|array'
         ]);
 
+        $validated['password'] = bcrypt($validated['password']);
+
         $usuario = Usuario::create($validated);
+
+        if (method_exists($usuario, 'assignRole')) {
+            $usuario->assignRole($validated['roles']);
+        }
 
         return response()->json($usuario, 201);
     }
