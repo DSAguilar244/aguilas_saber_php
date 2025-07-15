@@ -11,9 +11,8 @@ class UsuarioController extends Controller
 {
     public function index(Request $request)
     {
-        $query = \App\Models\Usuario::query();
+        $query = Usuario::query();
 
-        // Búsqueda por nombre, apellido o email
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -27,6 +26,37 @@ class UsuarioController extends Controller
 
         return view('usuarios.index', compact('usuarios'));
     }
+
+    public function buscar(Request $request)
+    {
+        $search = $request->input('search');
+
+        $usuarios = Usuario::with('roles')
+            ->where(function ($q) use ($search) {
+                $q->where('nombre', 'ILIKE', "%{$search}%")
+                    ->orWhere('apellido', 'ILIKE', "%{$search}%")
+                    ->orWhere('email', 'ILIKE', "%{$search}%");
+            })
+            ->orderBy('id', 'desc')
+            ->get(['id', 'nombre', 'apellido', 'email', 'telefono', 'rol', 'activo']);
+
+        return response()->json($usuarios);
+    }
+
+    public function validarNombre(Request $request)
+    {
+        $existe = Usuario::where('nombre', $request->nombre)->exists();
+        return response()->json(['existe' => $existe]);
+    }
+
+    public function validarEmail(Request $request)
+    {
+        $existe = Usuario::where('email', $request->email)->exists();
+        return response()->json(['existe' => $existe]);
+    }
+
+
+
     public function create()
     {
         $roles = Role::all();
@@ -36,11 +66,11 @@ class UsuarioController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'required|email|unique:usuarios,email',
-            'telefono' => 'nullable',
-            'password' => 'required|min:6',
+            'nombre' => 'required|string|max:50',
+            'apellido' => 'required|string|max:50',
+            'email' => 'required|email|max:100|unique:usuarios,email',
+            'telefono' => 'nullable|string|max:20|regex:/^[0-9+\s\-()]*$/',
+            'password' => 'required|string|min:8|max:30',
             'roles' => 'required|array',
             'roles.*' => 'exists:roles,id',
             'activo' => 'nullable|in:0,1',
@@ -70,25 +100,28 @@ class UsuarioController extends Controller
     public function update(Request $request, Usuario $usuario)
     {
         $request->validate([
-            'nombre' => 'required',
-            'apellido' => 'required',
-            'email' => 'required|email|unique:usuarios,email,' . $usuario->id,
-            'telefono' => 'nullable',
-            'password' => 'nullable|min:6',
+            'nombre' => 'required|string|max:50',
+            'apellido' => 'required|string|max:50',
+            'email' => 'required|email|max:100|unique:usuarios,email,' . $usuario->id,
+            'telefono' => 'nullable|string|max:20|regex:/^[0-9+\s\-()]*$/',
+            'password' => 'nullable|string|min:8|max:30',
             'roles' => 'required|array',
             'roles.*' => 'exists:roles,id',
             'activo' => 'nullable|in:0,1',
         ]);
 
-        $usuario->nombre = $request->nombre;
-        $usuario->apellido = $request->apellido;
-        $usuario->email = $request->email;
-        $usuario->telefono = $request->telefono;
+        $usuario->update([
+            'nombre' => $request->nombre,
+            'apellido' => $request->apellido,
+            'email' => $request->email,
+            'telefono' => $request->telefono,
+            'activo' => $request->activo == '1',
+        ]);
+
         if ($request->filled('password')) {
             $usuario->password = Hash::make($request->password);
+            $usuario->save();
         }
-        $usuario->activo = $request->activo == '1';
-        $usuario->save();
 
         $usuario->roles()->sync($request->roles);
 

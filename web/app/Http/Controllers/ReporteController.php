@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Producto;
 use App\Models\Usuario;
 use App\Models\Prestamo;
+use App\Models\Recurso;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -53,5 +54,19 @@ class ReporteController extends Controller
         $prestamos = Prestamo::with('recurso', 'usuario')->get();
         $pdf = Pdf::loadView('reportes.prestamos', compact('prestamos'));
         return $pdf->download('reporte_prestamos.pdf');
+    }
+
+    public function recursosPDF()
+    {
+        $recursos = Recurso::all();
+        $pdf = Pdf::loadView('reportes.recursos', compact('recursos'));
+        return $pdf->stream('reporte_recursos.pdf');
+    }
+
+    public function descargarRecursosPDF()
+    {
+        $recursos = Recurso::all();
+        $pdf = Pdf::loadView('reportes.recursos', compact('recursos'));
+        return $pdf->download('reporte_recursos.pdf');
     }
 }

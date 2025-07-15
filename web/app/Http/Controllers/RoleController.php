@@ -9,17 +9,37 @@ class RoleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = \App\Models\Role::query();
+        $query = Role::query();
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where('nombre', 'ILIKE', "%$search%")
-                ->orWhere('descripcion', 'ILIKE', "%$search%");
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'ILIKE', "%{$search}%")
+                  ->orWhere('descripcion', 'ILIKE', "%{$search}%");
+            });
         }
 
         $roles = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
 
         return view('roles.index', compact('roles'));
+    }
+
+    public function buscar(Request $request)
+    {
+        $search = $request->input('search');
+
+        $query = Role::query();
+
+        if (!empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nombre', 'ILIKE', "%{$search}%")
+                  ->orWhere('descripcion', 'ILIKE', "%{$search}%");
+            });
+        }
+
+        $roles = $query->orderBy('id', 'desc')->get(['id', 'nombre', 'descripcion']);
+
+        return response()->json($roles);
     }
 
     public function create()

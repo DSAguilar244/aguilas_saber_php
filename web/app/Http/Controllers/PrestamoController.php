@@ -11,20 +11,20 @@ class PrestamoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = \App\Models\Prestamo::with(['usuario', 'recurso']);
+        $query = Prestamo::with(['usuario', 'recurso']);
 
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->whereHas('usuario', function ($qu) use ($search) {
-                    $qu->where('nombre', 'ILIKE', "%$search%")
-                        ->orWhere('apellido', 'ILIKE', "%$search%");
-                })
-                    ->orWhereHas('recurso', function ($qr) use ($search) {
-                        $qr->where('nombre', 'ILIKE', "%$search%");
-                    })
-                    ->orWhere('codigo', 'ILIKE', "%$search%")
-                    ->orWhere('estado', 'ILIKE', "%$search%");
+                $q->where('codigo', 'ILIKE', "%$search%")
+                  ->orWhereHas('usuario', function ($qu) use ($search) {
+                      $qu->where('nombre', 'ILIKE', "%$search%")
+                         ->orWhere('apellido', 'ILIKE', "%$search%");
+                  })
+                  ->orWhereHas('recurso', function ($qr) use ($search) {
+                      $qr->where('nombre', 'ILIKE', "%$search%");
+                  })
+                  ->orWhere('estado', 'ILIKE', "%$search%");
             });
         }
 
@@ -35,8 +35,8 @@ class PrestamoController extends Controller
 
     public function create()
     {
-        $usuarios = \App\Models\Usuario::all();
-        $recursos = \App\Models\Recurso::all();
+        $usuarios = Usuario::all();
+        $recursos = Recurso::all();
         return view('prestamos.create', compact('usuarios', 'recursos'));
     }
 
@@ -65,8 +65,8 @@ class PrestamoController extends Controller
     public function edit($id)
     {
         $prestamo = Prestamo::findOrFail($id);
-        $usuarios = \App\Models\Usuario::all();
-        $recursos = \App\Models\Recurso::all();
+        $usuarios = Usuario::all();
+        $recursos = Recurso::all();
         return view('prestamos.edit', compact('prestamo', 'usuarios', 'recursos'));
     }
 
@@ -85,6 +85,42 @@ class PrestamoController extends Controller
         $prestamo->update($request->all());
 
         return redirect()->route('prestamos.index')->with('success', 'Préstamo actualizado correctamente');
+    }
+
+    // ✅ AJAX para búsqueda en tiempo real
+    public function buscar(Request $request)
+    {
+        $search = $request->input('search');
+
+        $prestamos = Prestamo::with(['usuario', 'recurso'])
+            ->where(function ($query) use ($search) {
+                $query->where('codigo', 'ILIKE', "%{$search}%")
+                    ->orWhereHas('usuario', function ($q) use ($search) {
+                        $q->where('nombre', 'ILIKE', "%{$search}%")
+                          ->orWhere('apellido', 'ILIKE', "%{$search}%");
+                    })
+                    ->orWhereHas('recurso', function ($q) use ($search) {
+                        $q->where('nombre', 'ILIKE', "%{$search}%");
+                    })
+                    ->orWhere('estado', 'ILIKE', "%{$search}%");
+            })
+            ->orderBy('id', 'desc')
+            ->get();
+
+        // Transformar para frontend AJAX
+        $data = $prestamos->map(function ($p) {
+            return [
+                'id' => $p->id,
+                'codigo' => $p->codigo,
+                'usuario' => $p->usuario ? "{$p->usuario->nombre} {$p->usuario->apellido}" : '—',
+                'recurso' => $p->recurso ? $p->recurso->nombre : '—',
+                'fecha_prestamo' => $p->fecha_prestamo,
+                'fecha_devolucion' => $p->fecha_devolucion,
+                'estado' => $p->estado,
+            ];
+        });
+
+        return response()->json($data);
     }
 
     public function destroy($id)

@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Recurso;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class RecursoController extends Controller
 {
     public function index(Request $request)
     {
-        $query = \App\Models\Recurso::query();
+        $query = Recurso::query();
 
-        // Búsqueda por nombre, descripción o categoría (ajusta los campos según tu modelo)
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
@@ -21,7 +21,6 @@ class RecursoController extends Controller
         }
 
         $recursos = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
-
         return view('recursos.index', compact('recursos'));
     }
 
@@ -32,22 +31,27 @@ class RecursoController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'descripcion' => 'nullable',
-            'cantidad' => 'required|integer|min:0',
-            'estado' => 'required',
+        $validator = Validator::make($request->all(), [
+            'nombre'      => 'required|string|max:100',
+            'descripcion' => 'nullable|string|max:255',
+            'cantidad'    => 'required|integer|min:0',
+            'estado'      => 'required|in:bueno,regular,deteriorado',
         ]);
 
-        Recurso::create($request->all());
+        // Validación personalizada para evitar duplicados antes de llegar al SQL
+        $validator->after(function ($validator) use ($request) {
+            if (Recurso::where('nombre', $request->nombre)->exists()) {
+                $validator->errors()->add('nombre', 'El recurso ya existe');
+            }
+        });
 
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Todo válido, se guarda
+        Recurso::create($request->only('nombre', 'descripcion', 'cantidad', 'estado'));
         return redirect()->route('recursos.index')->with('success', 'Recurso creado correctamente');
-    }
-
-    public function show($id)
-    {
-        $recurso = Recurso::findOrFail($id);
-        return view('recursos.show', compact('recurso'));
     }
 
     public function edit($id)
@@ -58,18 +62,55 @@ class RecursoController extends Controller
 
     public function update(Request $request, $id)
     {
-        $request->validate([
-            'nombre' => 'required',
-            'descripcion' => 'nullable',
-            'cantidad' => 'required|integer|min:0',
-            'estado' => 'required',
+        $validator = Validator::make($request->all(), [
+            'nombre'      => 'required|string|max:100',
+            'descripcion' => 'nullable|string|max:255',
+            'cantidad'    => 'required|integer|min:0',
+            'estado'      => 'required|in:bueno,regular,deteriorado',
         ]);
 
+        // Validación personalizada excluyendo el ID actual
+        $validator->after(function ($validator) use ($request, $id) {
+            if (Recurso::where('nombre', $request->nombre)->where('id', '!=', $id)->exists()) {
+                $validator->errors()->add('nombre', 'El recurso ya existe');
+            }
+        });
+
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
         $recurso = Recurso::findOrFail($id);
-        $recurso->update($request->all());
+        $recurso->update($request->only('nombre', 'descripcion', 'cantidad', 'estado'));
 
         return redirect()->route('recursos.index')->with('success', 'Recurso actualizado correctamente');
     }
+
+    public function verificarDisponibilidad(Request $request)
+    {
+        $id = $request->input('recurso_id');
+
+        $activo = \App\Models\Prestamo::where('recurso_id', $id)
+            ->where('estado', 'pendiente')
+            ->exists();
+
+        return response()->json(['activo' => $activo]);
+    }
+
+
+    public function buscar(Request $request)
+    {
+        $search = $request->input('search');
+
+        $recursos = Recurso::query()
+            ->where('nombre', 'ILIKE', "%{$search}%")
+            ->orWhere('descripcion', 'ILIKE', "%{$search}%")
+            ->orderBy('id', 'desc')
+            ->get(['id', 'nombre', 'descripcion', 'estado', 'cantidad']);
+
+        return response()->json($recursos);
+    }
+
 
     public function destroy($id)
     {
@@ -77,5 +118,14 @@ class RecursoController extends Controller
         $recurso->delete();
 
         return redirect()->route('recursos.index')->with('success', 'Recurso eliminado correctamente');
+    }
+
+    // 🔎 AJAX: verificación en tiempo real desde el formulario
+    public function validarNombre(Request $request)
+    {
+        $nombre = $request->input('nombre');
+        $existe = Recurso::where('nombre', $nombre)->exists();
+
+        return response()->json(['existe' => $existe]);
     }
 }

@@ -1,182 +1,77 @@
-/* Ensure the footer is at the bottom */
 html, body {
     font-family: Arial, sans-serif;
-    height: 100%;
     margin: 0;
+    padding: 0;
+    background-color: #f8f9fa;
 }
 
-.d-flex {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+/* Layout general */
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
 }
 
-.flex-grow-1 {
-    flex: 1;
-}
-
-footer {
-    background-color: #dc3545;
-    color: white;
-    text-align: center;
-    padding: 1rem 0;
-    margin-top: auto;
-    z-index: 1000;
-}
-
-/* Sidebar */
-#sidebar {
-    height: 100vh; /* Full height */
-    position: fixed; /* Fixed to the left side */
-    top: 0;
-    left: 0;
-    width: 250px; /* Sidebar width */
-    overflow-y: auto; /* Scroll if too many items */
-    background-color: #343a40; /* Background color */
-    transition: all 0.3s ease; /* Smooth transition */
-    z-index: 1000; /* Ensure sidebar is on top */
-}
-
-#content {
-    margin-left: 250px; /* Adjust content to the right of the sidebar */
-    padding: 20px;
-}
-
-#sidebar .nav-link {
-    font-size: 16px;
-    margin: 10px 0;
-    padding: 12px 16px;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    font-weight: 500;
-}
-
-#sidebar .nav-link:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-#sidebar .nav-link.active {
-    background-color: #dc3545;
-    color: white;
+h1 {
+    font-size: 2rem;
     font-weight: bold;
+    color: #343a40;
 }
 
-/* Card styles */
-.card {
-    height: auto; /* Adjust height automatically */
-    border-radius: 20px; /* Rounded corners */
-    overflow: hidden; /* Prevent overflow */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for better visual */
-    margin-bottom: 10px; /* Spacing between cards */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+/* Dashboard cards */
+.dashboard-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    animation: fadeIn 0.8s ease-out;
 }
 
-.card:hover {
-    transform: translateY(-5px); /* Lift effect on hover */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Deeper shadow on hover */
+.dashboard-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    flex: 1 1 300px;
+    max-width: 360px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .card-header {
     font-size: 1.2rem;
     font-weight: bold;
-    text-align: center;
-    padding: 10px;
+    padding: 12px;
+    color: #fff;
 }
 
 .card-body {
+    padding: 16px;
+    height: 280px;
     display: flex;
-    justify-content: center;
     align-items: center;
-    height: 300px;
-    padding: 20px; /* Internal spacing */
+    justify-content: center;
 }
 
-.card-body canvas {
+canvas {
     max-width: 100%;
     max-height: 100%;
 }
 
-/* Animations */
-@keyframes slideInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.text-secondary {
-    opacity: 0;
-    transform: translateY(-15px);
-    animation: slideInUp 1s ease-out 0.3s forwards;
-}
-
-.row {
-    opacity: 0;
-    animation: fadeIn 1s ease-out 0.6s forwards;
-}
-
+/* Animación fadeIn */
 @keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+    0% { opacity: 0; transform: scale(0.95); }
+    100% { opacity: 1; transform: scale(1); }
 }
 
-/* Responsive styles */
-@media (max-width: 1200px) {
-    .col-lg-4 {
-        flex: 0 0 50%;
-        max-width: 50%;
-    }
-}
-
+/* Responsive */
 @media (max-width: 768px) {
-    #sidebar {
-        width: 100%; /* Full width on small screens */
-        height: auto; /* Auto height */
-        position: relative; /* Relative positioning */
-    }
-
-    #content {
-        margin-left: 0; /* Remove left margin */
-    }
-
-    .d-flex {
-        flex-direction: column; /* Stack elements vertically */
-    }
-
-    .flex-grow-1 {
-        margin-top: 20px; /* Add margin to main content */
-    }
-
-    .col-md-6 {
-        flex: 0 0 100%;
-        max-width: 100%;
-    }
-}
-
-@media (max-width: 576px) {
-    #sidebar .nav-link {
-        font-size: 14px; /* Smaller font size */
-        padding: 10px 12px; /* Smaller padding */
-    }
-
-    footer {
-        padding: 0.5rem 0; /* Smaller padding */
-    }
-
-    .col-12 {
-        flex: 0 0 100%;
-        max-width: 100%;
+    .dashboard-row {
+        flex-direction: column;
+        align-items: center;
     }
 }
