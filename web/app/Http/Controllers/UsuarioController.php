@@ -43,6 +43,7 @@ class UsuarioController extends Controller
         return response()->json($usuarios);
     }
 
+
     public function validarNombre(Request $request)
     {
         $existe = Usuario::where('nombre', $request->nombre)->exists();

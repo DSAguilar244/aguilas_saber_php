@@ -17,19 +17,18 @@ class PrestamoController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('codigo', 'ILIKE', "%$search%")
-                  ->orWhereHas('usuario', function ($qu) use ($search) {
-                      $qu->where('nombre', 'ILIKE', "%$search%")
-                         ->orWhere('apellido', 'ILIKE', "%$search%");
-                  })
-                  ->orWhereHas('recurso', function ($qr) use ($search) {
-                      $qr->where('nombre', 'ILIKE', "%$search%");
-                  })
-                  ->orWhere('estado', 'ILIKE', "%$search%");
+                    ->orWhereHas('usuario', function ($qu) use ($search) {
+                        $qu->where('nombre', 'ILIKE', "%$search%")
+                           ->orWhere('apellido', 'ILIKE', "%$search%");
+                    })
+                    ->orWhereHas('recurso', function ($qr) use ($search) {
+                        $qr->where('nombre', 'ILIKE', "%$search%");
+                    })
+                    ->orWhere('estado', 'ILIKE', "%$search%");
             });
         }
 
         $prestamos = $query->orderBy('id', 'desc')->paginate(10)->withQueryString();
-
         return view('prestamos.index', compact('prestamos'));
     }
 
@@ -43,16 +42,15 @@ class PrestamoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'codigo' => 'required|unique:prestamos,codigo',
-            'usuario_id' => 'required|exists:usuarios,id',
-            'recurso_id' => 'required|exists:recursos,id',
-            'fecha_prestamo' => 'required|date',
-            'fecha_devolucion' => 'nullable|date|after_or_equal:fecha_prestamo',
-            'estado' => 'required',
+            'codigo'            => 'required|unique:prestamos,codigo',
+            'usuario_id'        => 'required|exists:usuarios,id',
+            'recurso_id'        => 'required|exists:recursos,id',
+            'fecha_prestamo'    => 'required|date',
+            'fecha_devolucion'  => 'nullable|date|after_or_equal:fecha_prestamo',
+            'estado'            => 'required|in:pendiente,devuelto,no devuelto',
         ]);
 
         Prestamo::create($request->all());
-
         return redirect()->route('prestamos.index')->with('success', 'Préstamo creado correctamente');
     }
 
@@ -73,12 +71,12 @@ class PrestamoController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'codigo' => 'required|unique:prestamos,codigo,' . $id,
-            'usuario_id' => 'required|exists:usuarios,id',
-            'recurso_id' => 'required|exists:recursos,id',
-            'fecha_prestamo' => 'required|date',
-            'fecha_devolucion' => 'nullable|date|after_or_equal:fecha_prestamo',
-            'estado' => 'required',
+            'codigo'            => 'required|unique:prestamos,codigo,' . $id,
+            'usuario_id'        => 'required|exists:usuarios,id',
+            'recurso_id'        => 'required|exists:recursos,id',
+            'fecha_prestamo'    => 'required|date',
+            'fecha_devolucion'  => 'nullable|date|after_or_equal:fecha_prestamo',
+            'estado'            => 'required|in:pendiente,devuelto,no devuelto',
         ]);
 
         $prestamo = Prestamo::findOrFail($id);
@@ -87,7 +85,7 @@ class PrestamoController extends Controller
         return redirect()->route('prestamos.index')->with('success', 'Préstamo actualizado correctamente');
     }
 
-    // ✅ AJAX para búsqueda en tiempo real
+    // 🔍 Búsqueda en tiempo real
     public function buscar(Request $request)
     {
         $search = $request->input('search');
@@ -107,16 +105,15 @@ class PrestamoController extends Controller
             ->orderBy('id', 'desc')
             ->get();
 
-        // Transformar para frontend AJAX
         $data = $prestamos->map(function ($p) {
             return [
-                'id' => $p->id,
-                'codigo' => $p->codigo,
-                'usuario' => $p->usuario ? "{$p->usuario->nombre} {$p->usuario->apellido}" : '—',
-                'recurso' => $p->recurso ? $p->recurso->nombre : '—',
-                'fecha_prestamo' => $p->fecha_prestamo,
-                'fecha_devolucion' => $p->fecha_devolucion,
-                'estado' => $p->estado,
+                'id'              => $p->id,
+                'codigo'          => $p->codigo,
+                'usuario'         => $p->usuario ? "{$p->usuario->nombre} {$p->usuario->apellido}" : '—',
+                'recurso'         => $p->recurso ? $p->recurso->nombre : '—',
+                'fecha_prestamo'  => $p->fecha_prestamo,
+                'fecha_devolucion'=> $p->fecha_devolucion,
+                'estado'          => $p->estado,
             ];
         });
 

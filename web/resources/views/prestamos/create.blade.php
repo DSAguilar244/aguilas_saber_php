@@ -24,8 +24,8 @@
         <div class="mb-3">
             <label for="codigo">Código <span class="text-danger">*</span></label>
             <input type="text" name="codigo" id="codigo" class="form-control"
-                value="{{ old('codigo') }}" required maxlength="50"
-                placeholder="Ej: PREST-001">
+                   value="{{ old('codigo') }}" required maxlength="50"
+                   placeholder="Ej: PREST-001">
             <small class="form-text text-muted">Identificador único del préstamo.</small>
         </div>
 
@@ -57,13 +57,13 @@
         <div class="mb-3">
             <label for="fecha_prestamo">Fecha Préstamo <span class="text-danger">*</span></label>
             <input type="date" name="fecha_prestamo" id="fecha_prestamo" class="form-control"
-                value="{{ old('fecha_prestamo') }}" required>
+                   value="{{ old('fecha_prestamo') }}" required>
         </div>
 
         <div class="mb-3">
             <label for="fecha_devolucion">Fecha Devolución</label>
             <input type="date" name="fecha_devolucion" id="fecha_devolucion" class="form-control"
-                value="{{ old('fecha_devolucion') }}">
+                   value="{{ old('fecha_devolucion') }}">
         </div>
 
         <div class="mb-3">
@@ -71,7 +71,7 @@
             <select name="estado" id="estado" class="form-control" required>
                 <option value="pendiente" {{ old('estado') == 'pendiente' ? 'selected' : '' }}>Pendiente</option>
                 <option value="devuelto" {{ old('estado') == 'devuelto' ? 'selected' : '' }}>Devuelto</option>
-                <option value="atrasado" {{ old('estado') == 'atrasado' ? 'selected' : '' }}>Atrasado</option>
+                <option value="no devuelto" {{ old('estado') == 'no devuelto' ? 'selected' : '' }}>No devuelto</option>
             </select>
         </div>
 

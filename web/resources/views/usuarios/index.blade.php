@@ -14,15 +14,10 @@
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    {{-- 🔍 Buscador con mejor usabilidad --}}
-    <div class="mb-3 position-relative">
-        <label for="search-usuarios" class="form-label">Buscar por nombre, apellido o correo</label>
-        <div class="input-group">
-            <span class="input-group-text"><i class="fas fa-search"></i></span>
-            <input type="text" id="search-usuarios" class="form-control"
-                   placeholder="Ej: Andrea, López, ejemplo@mail.com" autocomplete="off">
-        </div>
-        <small class="form-text text-muted">La búsqueda se actualiza automáticamente mientras escribes.</small>
+    {{-- 🔍 Buscador sin ícono --}}
+    <div class="mb-3">
+        <input type="text" id="search-usuarios" class="form-control"
+               placeholder="Buscar por nombre, apellido o correo..." autocomplete="off">
     </div>
 
     {{-- 📋 Tabla de usuarios --}}
@@ -42,20 +37,20 @@
         <tbody id="usuarios-body">
             @forelse ($usuarios as $usuario)
             <tr>
-                <td>{{ $usuario->nombre }}</td>
-                <td>{{ $usuario->apellido }}</td>
-                <td>{{ $usuario->email }}</td>
-                <td>{{ $usuario->telefono }}</td>
-                <td>{{ $usuario->rol }}</td>
-                <td>{{ $usuario->activo ? 'Sí' : 'No' }}</td>
-                <td>
+                <td data-label="Nombre">{{ $usuario->nombre }}</td>
+                <td data-label="Apellido">{{ $usuario->apellido }}</td>
+                <td data-label="Email">{{ $usuario->email }}</td>
+                <td data-label="Teléfono">{{ $usuario->telefono }}</td>
+                <td data-label="Rol">{{ $usuario->rol }}</td>
+                <td data-label="Activo">{{ $usuario->activo ? 'Sí' : 'No' }}</td>
+                <td data-label="Roles">
                     @forelse ($usuario->roles as $rol)
                     <span class="badge bg-info">{{ $rol->nombre }}</span>
                     @empty
                     <span class="badge badge-no-disponible">Sin rol</span>
                     @endforelse
                 </td>
-                <td>
+                <td data-label="Acciones">
                     <a href="{{ route('usuarios.edit', $usuario) }}" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
                     <form action="{{ route('usuarios.destroy', $usuario) }}" method="POST" style="display:inline-block;">
                         @csrf @method('DELETE')
@@ -110,14 +105,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         tableBody.innerHTML += `
                             <tr>
-                                <td>${usuario.nombre}</td>
-                                <td>${usuario.apellido}</td>
-                                <td>${usuario.email}</td>
-                                <td>${usuario.telefono}</td>
-                                <td>${usuario.rol}</td>
-                                <td>${usuario.activo ? 'Sí' : 'No'}</td>
-                                <td>${rolesHTML}</td>
-                                <td>
+                                <td data-label="Nombre">${usuario.nombre}</td>
+                                <td data-label="Apellido">${usuario.apellido}</td>
+                                <td data-label="Email">${usuario.email}</td>
+                                <td data-label="Teléfono">${usuario.telefono}</td>
+                                <td data-label="Rol">${usuario.rol}</td>
+                                <td data-label="Activo">${usuario.activo ? 'Sí' : 'No'}</td>
+                                <td data-label="Roles">${rolesHTML}</td>
+                                <td data-label="Acciones">
                                     <a href="/usuarios/${usuario.id}/edit" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
                                     <form method="POST" action="/usuarios/${usuario.id}" style="display:inline-block;">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">

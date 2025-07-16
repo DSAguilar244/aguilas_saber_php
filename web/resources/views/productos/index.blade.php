@@ -16,7 +16,7 @@
 
     {{-- 🔍 Buscador en tiempo real --}}
     <div class="mb-3">
-        <input type="text" id="search-productos" class="form-control" placeholder="Buscar por nombre o estado...">
+        <input type="text" id="search-productos" class="form-control" placeholder="Buscar por nombre o estado..." autocomplete="off">
     </div>
 
     {{-- 📋 Tabla de productos --}}
@@ -34,18 +34,18 @@
         <tbody id="productos-body">
             @forelse($productos as $producto)
             <tr>
-                <td>{{ $producto->nombre }}</td>
-                <td>
+                <td data-label="Nombre">{{ $producto->nombre }}</td>
+                <td data-label="Estado">
                     @if (strtolower($producto->estado) === 'disponible')
                         <span class="badge badge-disponible">Disponible</span>
                     @else
                         <span class="badge badge-no-disponible">Agotado</span>
                     @endif
                 </td>
-                <td>{{ $producto->fecha_entrada }}</td>
-                <td>{{ $producto->fecha_salida }}</td>
-                <td>{{ $producto->cantidad }}</td>
-                <td>
+                <td data-label="Fecha Entrada">{{ $producto->fecha_entrada }}</td>
+                <td data-label="Fecha Salida">{{ $producto->fecha_salida }}</td>
+                <td data-label="Cantidad">{{ $producto->cantidad }}</td>
+                <td data-label="Acciones">
                     @if (strtolower($producto->estado) === 'disponible')
                         <a href="{{ route('productos.edit', $producto) }}" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
                     @else
@@ -84,12 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const query = this.value.trim();
         clearTimeout(timer);
 
-        if (!query) {
-            paginacion.style.display = 'block';
-            return;
-        }
-
-        paginacion.style.display = 'none';
+        paginacion.style.display = query ? 'none' : 'block';
 
         timer = setTimeout(() => {
             fetch(`/productos/buscar?search=${encodeURIComponent(query)}`)
@@ -113,17 +108,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         tableBody.innerHTML += `
                             <tr>
-                                <td>${prod.nombre}</td>
-                                <td>${badge}</td>
-                                <td>${prod.fecha_entrada ?? ''}</td>
-                                <td>${prod.fecha_salida ?? ''}</td>
-                                <td>${prod.cantidad}</td>
-                                <td>
+                                <td data-label="Nombre">${prod.nombre}</td>
+                                <td data-label="Estado">${badge}</td>
+                                <td data-label="Fecha Entrada">${prod.fecha_entrada ?? ''}</td>
+                                <td data-label="Fecha Salida">${prod.fecha_salida ?? ''}</td>
+                                <td data-label="Cantidad">${prod.cantidad}</td>
+                                <td data-label="Acciones">
                                     ${botonActivo}
                                     <form method="POST" action="/productos/${prod.id}" style="display:inline-block;">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="btn btn-danger btn-sm w-auto">🗑️</button>
+                                        <button type="submit" class="btn btn-danger btn-sm w-auto">🗑️ Eliminar</button>
                                     </form>
                                 </td>
                             </tr>`;

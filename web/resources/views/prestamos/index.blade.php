@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('styles')
-    <link href="{{ asset('css/usuario.css') }}" rel="stylesheet">
+<link href="{{ asset('css/usuario.css') }}" rel="stylesheet">
 @endsection
 
 @section('content')
@@ -11,7 +11,7 @@
     <a href="{{ route('prestamos.create') }}" class="btn btn-primary mb-3">Agregar Préstamo</a>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
     {{-- 🔍 Búsqueda en tiempo real --}}
@@ -35,23 +35,23 @@
         <tbody id="prestamos-body">
             @forelse($prestamos as $prestamo)
             <tr>
-                <td>{{ $prestamo->codigo }}</td>
-                <td>{{ $prestamo->usuario->nombre ?? '' }} {{ $prestamo->usuario->apellido ?? '' }}</td>
-                <td>{{ $prestamo->recurso->nombre ?? '' }}</td>
-                <td>{{ $prestamo->fecha_prestamo }}</td>
-                <td>{{ $prestamo->fecha_devolucion }}</td>
-                <td>
+                <td data-label="Código">{{ $prestamo->codigo }}</td>
+                <td data-label="Usuario">{{ $prestamo->usuario->nombre ?? '' }} {{ $prestamo->usuario->apellido ?? '' }}</td>
+                <td data-label="Recurso">{{ $prestamo->recurso->nombre ?? '' }}</td>
+                <td data-label="Fecha Préstamo">{{ $prestamo->fecha_prestamo }}</td>
+                <td data-label="Fecha Devolución">{{ $prestamo->fecha_devolucion }}</td>
+                <td data-label="Estado">
                     @if ($prestamo->estado === 'Activo')
                         <span class="badge badge-disponible">Activo</span>
                     @else
                         <span class="badge badge-no-disponible">{{ $prestamo->estado }}</span>
                     @endif
                 </td>
-                <td>
-                    <a href="{{ route('prestamos.edit', $prestamo) }}" class="btn btn-warning btn-sm">✏️ Editar</a>
+                <td data-label="Acciones">
+                    <a href="{{ route('prestamos.edit', $prestamo) }}" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
                     <form action="{{ route('prestamos.destroy', $prestamo) }}" method="POST" style="display:inline-block;">
                         @csrf @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Eliminar</button>
+                        <button type="submit" class="btn btn-danger btn-sm w-auto">🗑️ Eliminar</button>
                     </form>
                 </td>
             </tr>
@@ -63,6 +63,7 @@
         </tbody>
     </table>
 
+    {{-- 📄 Paginación --}}
     <div class="d-flex justify-content-center" id="prestamos-paginacion">
         {{ $prestamos->links() }}
     </div>
@@ -106,18 +107,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         tableBody.innerHTML += `
                             <tr>
-                                <td>${prestamo.codigo}</td>
-                                <td>${prestamo.usuario}</td>
-                                <td>${prestamo.recurso}</td>
-                                <td>${prestamo.fecha_prestamo}</td>
-                                <td>${prestamo.fecha_devolucion}</td>
-                                <td>${estadoBadge}</td>
-                                <td>
-                                    <a href="/prestamos/${prestamo.id}/edit" class="btn btn-warning btn-sm">✏️ Editar</a>
+                                <td data-label="Código">${prestamo.codigo}</td>
+                                <td data-label="Usuario">${prestamo.usuario}</td>
+                                <td data-label="Recurso">${prestamo.recurso}</td>
+                                <td data-label="Fecha Préstamo">${prestamo.fecha_prestamo}</td>
+                                <td data-label="Fecha Devolución">${prestamo.fecha_devolucion}</td>
+                                <td data-label="Estado">${estadoBadge}</td>
+                                <td data-label="Acciones">
+                                    <a href="/prestamos/${prestamo.id}/edit" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
                                     <form method="POST" action="/prestamos/${prestamo.id}" style="display:inline-block;">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="btn btn-danger btn-sm">🗑️ Eliminar</button>
+                                        <button type="submit" class="btn btn-danger btn-sm w-auto">🗑️ Eliminar</button>
                                     </form>
                                 </td>
                             </tr>`;

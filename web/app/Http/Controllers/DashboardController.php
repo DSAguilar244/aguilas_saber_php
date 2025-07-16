@@ -14,9 +14,9 @@ class DashboardController extends Controller
     public function index()
     {
         // 🔹 Totales simples
-        $totalProductos = Producto::count();
-        $totalDevoluciones = Prestamo::whereRaw("LOWER(estado) = 'devuelto'")->count();
-        $totalIngresos    = Prestamo::whereRaw("LOWER(estado) = 'activo'")->count();
+        $totalProductos     = Producto::count();
+        $totalDevoluciones  = Prestamo::whereRaw("LOWER(estado) = 'devuelto'")->count();
+        $totalNoDevueltos   = Prestamo::whereRaw("LOWER(estado) = 'no devuelto'")->count();
 
         // 🔹 Productos por mes (PostgreSQL compatible)
         $productosMes = Producto::whereNotNull('fecha_entrada')
@@ -29,7 +29,7 @@ class DashboardController extends Controller
         $mesData   = [];
 
         foreach ($productosMes as $registro) {
-            $mesLabels[] = Carbon::create()->month((int) $registro->mes)->translatedFormat('F');
+            $mesLabels[] = Carbon::create()->month((int) $registro->mes)->translatedFormat('F'); // Ej: "Enero"
             $mesData[]   = $registro->total;
         }
 
@@ -45,14 +45,14 @@ class DashboardController extends Controller
         }
 
         // 🔹 Convertir todo a arrays planos antes de pasarlo a la vista
-        $mesLabels       = collect($mesLabels)->toArray();
-        $mesData         = collect($mesData)->toArray();
-        $estadoRecursos  = $estadoRecursos->toArray();
+        $mesLabels      = collect($mesLabels)->toArray();
+        $mesData        = collect($mesData)->toArray();
+        $estadoRecursos = $estadoRecursos->toArray();
 
         return view('dashboard', compact(
             'totalProductos',
             'totalDevoluciones',
-            'totalIngresos',
+            'totalNoDevueltos',
             'mesLabels',
             'mesData',
             'estadoRecursos'

@@ -18,6 +18,7 @@ Route::get('/recursos/buscar', [RecursoController::class, 'buscar']);
 Route::post('/usuarios/validar-nombre', [UsuarioController::class, 'validarNombre'])->name('usuarios.validarNombre');
 Route::post('/usuarios/validar-email', [UsuarioController::class, 'validarEmail'])->name('usuarios.validarEmail');
 Route::get('/prestamos/buscar', [PrestamoController::class, 'buscar']);
+Route::get('/usuarios/buscar', [UsuarioController::class, 'buscar']);
 Route::post('/recursos/validar-disponibilidad', [RecursoController::class, 'verificarDisponibilidad']);
 Route::get('/productos/buscar', [ProductoController::class, 'buscar']);
 Route::get('/roles/buscar', [RoleController::class, 'buscar']);
