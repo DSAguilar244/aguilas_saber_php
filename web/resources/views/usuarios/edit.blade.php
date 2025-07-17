@@ -68,12 +68,14 @@
             </small>
         </div>
 
+        {{-- 🔐 Roles usando Spatie --}}
         <div class="mb-3">
             <label for="roles">Roles <span class="text-danger">*</span></label>
             <select name="roles[]" id="roles" class="form-control" multiple required>
                 @foreach ($roles as $rol)
-                <option value="{{ $rol->id }}" {{ $usuario->roles->contains($rol->id) ? 'selected' : '' }}>
-                    {{ $rol->nombre }}
+                <option value="{{ $rol->id }}"
+                    {{ $usuario->roles->pluck('id')->contains($rol->id) ? 'selected' : '' }}>
+                    {{ $rol->name }} {{-- ✅ corregido: antes era $rol->nombre --}}
                 </option>
                 @endforeach
             </select>

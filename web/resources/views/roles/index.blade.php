@@ -31,7 +31,7 @@
         <tbody id="roles-body">
             @forelse($roles as $role)
             <tr>
-                <td data-label="Nombre">{{ $role->nombre }}</td>
+                <td data-label="Nombre">{{ $role->name }}</td> {{-- ✅ Usar 'name' --}}
                 <td data-label="Descripción">{{ $role->descripcion }}</td>
                 <td data-label="Acciones">
                     <a href="{{ route('roles.edit', $role) }}" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     data.forEach(role => {
                         tableBody.innerHTML += `
                             <tr>
-                                <td data-label="Nombre">${role.nombre}</td>
+                                <td data-label="Nombre">${role.name}</td> <!-- ✅ corregido -->
                                 <td data-label="Descripción">${role.descripcion ?? ''}</td>
                                 <td data-label="Acciones">
                                     <a href="/roles/${role.id}/edit" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>

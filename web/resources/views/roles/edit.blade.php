@@ -23,10 +23,11 @@
         @method('PUT')
 
         <div class="mb-3">
-            <label for="nombre">Nombre <span class="text-danger">*</span></label>
-            <input type="text" name="nombre" id="nombre" class="form-control"
-                   value="{{ old('nombre', $role->nombre) }}" required maxlength="100"
-                   placeholder="Ej: Administrador, Editor, Invitado">
+            <label for="name">Nombre <span class="text-danger">*</span></label>
+            <input type="text" name="name" id="name" class="form-control"
+                   value="{{ old('name', $role->name) }}" required maxlength="100"
+                   placeholder="Ej: Administrador, Editor, Invitado"
+                   title="Este nombre debe ser único por guardia">
         </div>
 
         <div class="mb-3">

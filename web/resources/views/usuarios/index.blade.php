@@ -14,13 +14,11 @@
     <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    {{-- 🔍 Buscador sin ícono --}}
     <div class="mb-3">
         <input type="text" id="search-usuarios" class="form-control"
                placeholder="Buscar por nombre, apellido o correo..." autocomplete="off">
     </div>
 
-    {{-- 📋 Tabla de usuarios --}}
     <table class="table table-bordered">
         <thead>
             <tr>
@@ -28,7 +26,6 @@
                 <th>Apellido</th>
                 <th>Email</th>
                 <th>Teléfono</th>
-                <th>Rol</th>
                 <th>Activo</th>
                 <th>Roles</th>
                 <th>Acciones</th>
@@ -41,11 +38,10 @@
                 <td data-label="Apellido">{{ $usuario->apellido }}</td>
                 <td data-label="Email">{{ $usuario->email }}</td>
                 <td data-label="Teléfono">{{ $usuario->telefono }}</td>
-                <td data-label="Rol">{{ $usuario->rol }}</td>
                 <td data-label="Activo">{{ $usuario->activo ? 'Sí' : 'No' }}</td>
                 <td data-label="Roles">
                     @forelse ($usuario->roles as $rol)
-                    <span class="badge bg-info">{{ $rol->nombre }}</span>
+                    <span class="badge bg-info">{{ $rol->name }}</span> {{-- 🔄 Corregido: 'nombre' → 'name' --}}
                     @empty
                     <span class="badge badge-no-disponible">Sin rol</span>
                     @endforelse
@@ -60,13 +56,12 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="text-center text-muted">No se han encontrado resultados.</td>
+                <td colspan="7" class="text-center text-muted">No se han encontrado resultados.</td>
             </tr>
             @endforelse
         </tbody>
     </table>
 
-    {{-- 📄 Paginación --}}
     <div class="d-flex justify-content-center" id="usuarios-paginacion">
         {{ $usuarios->links() }}
     </div>
@@ -94,13 +89,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     tableBody.innerHTML = '';
 
                     if (data.length === 0) {
-                        tableBody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No se encontraron usuarios.</td></tr>';
+                        tableBody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">No se encontraron usuarios.</td></tr>';
                         return;
                     }
 
                     data.forEach(usuario => {
                         const rolesHTML = usuario.roles.length > 0
-                            ? usuario.roles.map(r => `<span class="badge bg-info">${r.nombre}</span>`).join(' ')
+                            ? usuario.roles.map(r => `<span class="badge bg-info">${r.name}</span>`).join(' ') // 🔄 Corregido
                             : `<span class="badge badge-no-disponible">Sin rol</span>`;
 
                         tableBody.innerHTML += `
@@ -109,7 +104,6 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <td data-label="Apellido">${usuario.apellido}</td>
                                 <td data-label="Email">${usuario.email}</td>
                                 <td data-label="Teléfono">${usuario.telefono}</td>
-                                <td data-label="Rol">${usuario.rol}</td>
                                 <td data-label="Activo">${usuario.activo ? 'Sí' : 'No'}</td>
                                 <td data-label="Roles">${rolesHTML}</td>
                                 <td data-label="Acciones">

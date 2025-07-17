@@ -62,13 +62,13 @@
                    title="Mínimo 8 caracteres">
         </div>
 
+        {{-- 🛡 Roles ajustado para Spatie --}}
         <div class="mb-3">
             <label for="roles">Roles <span class="text-danger">*</span></label>
             <select name="roles[]" id="roles" class="form-control" multiple required>
-                <option value="" disabled>-- Selecciona uno o más roles --</option>
                 @foreach ($roles as $rol)
                 <option value="{{ $rol->id }}" {{ collect(old('roles'))->contains($rol->id) ? 'selected' : '' }}>
-                    {{ $rol->nombre }}
+                    {{ $rol->name }} {{-- ✅ corregido: antes era $rol->nombre --}}
                 </option>
                 @endforeach
             </select>

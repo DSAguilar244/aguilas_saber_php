@@ -11,7 +11,7 @@ class UsuarioController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Usuario::query();
+        $query = Usuario::with('roles');
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -38,11 +38,10 @@ class UsuarioController extends Controller
                     ->orWhere('email', 'ILIKE', "%{$search}%");
             })
             ->orderBy('id', 'desc')
-            ->get(['id', 'nombre', 'apellido', 'email', 'telefono', 'rol', 'activo']);
+            ->get(['id', 'nombre', 'apellido', 'email', 'telefono', 'activo']);
 
         return response()->json($usuarios);
     }
-
 
     public function validarNombre(Request $request)
     {
@@ -55,8 +54,6 @@ class UsuarioController extends Controller
         $existe = Usuario::where('email', $request->email)->exists();
         return response()->json(['existe' => $existe]);
     }
-
-
 
     public function create()
     {

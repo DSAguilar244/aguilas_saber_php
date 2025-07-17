@@ -13,9 +13,13 @@ return new class extends Migration
     {
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre')->unique();
-            $table->string('descripcion')->nullable();
+            $table->string('name');               // ✅ Nombre del rol (admin, usuario, etc.)
+            $table->string('guard_name');         // 🔐 Spatie requiere este campo ("web" por defecto)
+            $table->string('descripcion')->nullable(); // ✍️ Opcional para describir el rol
             $table->timestamps();
+
+            // 🧠 Asegura que cada nombre de rol sea único para cada guardia
+            $table->unique(['name', 'guard_name']);
         });
     }
 

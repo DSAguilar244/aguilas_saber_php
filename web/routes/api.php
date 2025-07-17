@@ -12,6 +12,10 @@ use App\Http\Controllers\Api\UsuarioController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\PrestamoController;
 use App\Http\Controllers\Api\RecursoController;
+use App\Http\Controllers\Api\LoginController;
+
+// Rutas de la API
+Route::post('/login', [LoginController::class, 'login']);
 
 //
 // 📦 Productos

@@ -14,8 +14,8 @@ class RoleController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('nombre', 'ILIKE', "%{$search}%")
-                  ->orWhere('descripcion', 'ILIKE', "%{$search}%");
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('descripcion', 'LIKE', "%{$search}%");
             });
         }
 
@@ -32,12 +32,12 @@ class RoleController extends Controller
 
         if (!empty($search)) {
             $query->where(function ($q) use ($search) {
-                $q->where('nombre', 'ILIKE', "%{$search}%")
-                  ->orWhere('descripcion', 'ILIKE', "%{$search}%");
+                $q->where('name', 'LIKE', "%{$search}%")
+                  ->orWhere('descripcion', 'LIKE', "%{$search}%");
             });
         }
 
-        $roles = $query->orderBy('id', 'desc')->get(['id', 'nombre', 'descripcion']);
+        $roles = $query->orderBy('id', 'desc')->get(['id', 'name', 'descripcion']);
 
         return response()->json($roles);
     }
@@ -50,11 +50,11 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|unique:roles,nombre',
+            'name' => 'required|unique:roles,name',
             'descripcion' => 'nullable|string',
         ]);
 
-        Role::create($request->only('nombre', 'descripcion'));
+        Role::create($request->only('name', 'descripcion'));
 
         return redirect()->route('roles.index')->with('success', 'Rol creado correctamente');
     }
@@ -74,12 +74,12 @@ class RoleController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'nombre' => 'required|unique:roles,nombre,' . $id,
+            'name' => 'required|unique:roles,name,' . $id,
             'descripcion' => 'nullable|string',
         ]);
 
         $role = Role::findOrFail($id);
-        $role->update($request->only('nombre', 'descripcion'));
+        $role->update($request->only('name', 'descripcion'));
 
         return redirect()->route('roles.index')->with('success', 'Rol actualizado correctamente');
     }
