@@ -16,29 +16,33 @@ use App\Http\Controllers\Api\LoginController;
 
 // Rutas de la API
 Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth:api');
 
-//
-// 📦 Productos
-//
-Route::apiResource('productos', ProductoApiController::class);
-Route::get('/reporte-productos', [ReporteController::class, 'productosPDF']);
+// Rutas protegidas con JWT
+Route::middleware('auth:api')->group(function () {
+    //
+    // 📦 Productos
+    //
+    Route::apiResource('productos', ProductoApiController::class);
+    Route::get('/reporte-productos', [ReporteController::class, 'productosPDF']);
 
-//
-// 👤 Usuarios
-//
-Route::apiResource('usuarios', UsuarioController::class);
+    //
+    // 👤 Usuarios
+    //
+    Route::apiResource('usuarios', UsuarioController::class);
 
-//
-// 🔐 Roles
-//
-Route::apiResource('roles', RoleController::class);
+    //
+    // 🔐 Roles
+    //
+    Route::apiResource('roles', RoleController::class);
 
-//
-// 📚 Préstamos
-//
-Route::apiResource('prestamos', PrestamoController::class);
+    //
+    // 📚 Préstamos
+    //
+    Route::apiResource('prestamos', PrestamoController::class);
 
-//
-// 🧰 Recursos
-//
-Route::apiResource('recursos', RecursoController::class);
+    //
+    // 🧰 Recursos
+    //
+    Route::apiResource('recursos', RecursoController::class);
+});

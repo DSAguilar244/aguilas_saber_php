@@ -19,10 +19,15 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|unique:roles,name',
+            'guard_name' => 'nullable|string',
             'descripcion' => 'nullable|string|max:255',
         ]);
 
-        $role = Role::create($validated);
+        $role = Role::create([
+            'name' => $validated['name'],
+            'guard_name' => $validated['guard_name'] ?? 'api',
+            'descripcion' => $validated['descripcion'] ?? null,
+        ]);
 
         return response()->json($role, 201);
     }
@@ -37,13 +42,20 @@ class RoleController extends Controller
     // ✏️ Actualizar rol
     public function update(Request $request, $id)
     {
+        $guard = $request->input('guard_name', 'api');
+
         $validated = $request->validate([
-            'name' => 'required|string|unique:roles,name,' . $id,
+            'name' => 'required|string|unique:roles,name,' . $id . ',id,guard_name,' . $guard,
+            'guard_name' => 'nullable|string',
             'descripcion' => 'nullable|string|max:255',
         ]);
 
         $role = Role::findOrFail($id);
-        $role->update($validated);
+        $role->update([
+            'name' => $validated['name'],
+            'guard_name' => $validated['guard_name'] ?? 'api',
+            'descripcion' => $validated['descripcion'] ?? null,
+        ]);
 
         return response()->json($role);
     }

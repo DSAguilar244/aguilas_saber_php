@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -25,7 +26,8 @@ class UsuarioController extends Controller
             'telefono'  => 'required|string',
             'activo'    => 'required|boolean',
             'password'  => 'required|string|min:6',
-            'roles'     => 'required|array'
+            'roles'     => 'required|array|min:1',
+            'roles.*'   => 'integer|exists:roles,id',
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
@@ -39,7 +41,15 @@ class UsuarioController extends Controller
             'password' => $validated['password'],
         ]);
 
-        $usuario->syncRoles($validated['roles']); // ✅ Asigna roles reales
+        $roles = Role::whereIn('id', $validated['roles'])->get();
+
+        if ($roles->count() !== count($validated['roles'])) {
+            return response()->json([
+                'message' => 'Uno o más roles seleccionados no existen o no tienen guard válido.'
+            ], 422);
+        }
+
+        $usuario->syncRoles($roles); // ✅ Asigna roles reales
 
         $usuario->load('roles'); // ✅ Incluye los roles en la respuesta
 
@@ -63,7 +73,8 @@ class UsuarioController extends Controller
             'telefono' => 'required|string',
             'activo'   => 'required|boolean',
             'password' => 'nullable|string|min:6',
-            'roles'    => 'nullable|array'
+            'roles'    => 'nullable|array',
+            'roles.*'  => 'integer|exists:roles,id',
         ]);
 
         $usuario->update([
@@ -79,8 +90,20 @@ class UsuarioController extends Controller
             $usuario->save();
         }
 
-        if (!empty($validated['roles'])) {
-            $usuario->syncRoles($validated['roles']);
+        if ($request->has('roles')) {
+            if (!empty($validated['roles'])) {
+                $roles = Role::whereIn('id', $validated['roles'])->get();
+
+                if ($roles->count() !== count($validated['roles'])) {
+                    return response()->json([
+                        'message' => 'Uno o más roles seleccionados no existen o no tienen guard válido.'
+                    ], 422);
+                }
+
+                $usuario->syncRoles($roles);
+            } else {
+                $usuario->syncRoles([]);
+            }
         }
 
         $usuario->load('roles');
