@@ -13,22 +13,38 @@ class UsuarioSeeder extends Seeder
      */
     public function run(): void
     {
-        Usuario::create([
-            'nombre' => 'Admin',
-            'apellido' => 'Sistema',
-            'email' => 'admin@aguillassaber.local',
-            'telefono' => '3001234567',
-            'password' => Hash::make('password123'),
-            'activo' => true,
-        ]);
+        $admin = Usuario::where('email', 'admin@aguillassaber.local')->first();
+        if (! $admin) {
+            $admin = Usuario::create([
+                'nombre' => 'Admin',
+                'apellido' => 'Sistema',
+                'email' => 'admin@aguillassaber.local',
+                'telefono' => '3001234567',
+                'password' => Hash::make('password123'),
+                'activo' => true,
+            ]);
+        }
 
-        Usuario::create([
-            'nombre' => 'Test',
-            'apellido' => 'Usuario',
-            'email' => 'test@aguillassaber.local',
-            'telefono' => '3007654321',
-            'password' => Hash::make('test123'),
-            'activo' => true,
-        ]);
+        // Asignar rol administrador si existe
+        try {
+            $roleAdmin = \App\Models\Role::where('name', 'admin')->first();
+            if ($roleAdmin) {
+                $admin->roles()->syncWithoutDetaching([$roleAdmin->id]);
+            }
+        } catch (\Throwable $e) {
+            // Ignorar si la tabla de roles aún no existe en algunos entornos
+        }
+
+        $test = Usuario::where('email', 'test@aguillassaber.local')->first();
+        if (! $test) {
+            Usuario::create([
+                'nombre' => 'Test',
+                'apellido' => 'Usuario',
+                'email' => 'test@aguillassaber.local',
+                'telefono' => '3007654321',
+                'password' => Hash::make('test123'),
+                'activo' => true,
+            ]);
+        }
     }
 }
