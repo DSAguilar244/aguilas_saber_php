@@ -15,14 +15,18 @@ class UsuarioSeeder extends Seeder
     {
         $admin = Usuario::where('email', 'admin@aguillassaber.local')->first();
         if (! $admin) {
-            $admin = Usuario::create([
-                'nombre' => 'Admin',
-                'apellido' => 'Sistema',
-                'email' => 'admin@aguillassaber.local',
-                'telefono' => '3001234567',
-                'password' => Hash::make('password123'),
-                'activo' => true,
-            ]);
+            try {
+                $admin = Usuario::create([
+                    'nombre' => 'Admin',
+                    'apellido' => 'Sistema',
+                    'email' => 'admin@aguillassaber.local',
+                    'telefono' => '3001234567',
+                    'password' => Hash::make('password123'),
+                    'activo' => true,
+                ]);
+            } catch (\Throwable $e) {
+                $admin = Usuario::where('email', 'admin@aguillassaber.local')->first();
+            }
         }
 
         // Asignar rol administrador si existe
