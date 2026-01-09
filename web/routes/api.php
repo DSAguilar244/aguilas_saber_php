@@ -19,7 +19,7 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->middleware('auth:api');
 
 // Rutas protegidas con JWT
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:api')->name('api.')->group(function () {
     //
     // 📦 Productos
     //
