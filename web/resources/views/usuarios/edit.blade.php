@@ -68,28 +68,39 @@
             </small>
         </div>
 
-        {{-- 🔐 Roles usando Spatie --}}
+        {{-- 🔐 Rol único --}}
+        @php
+            $isAdmin = auth()->user()->roles->contains('name', 'admin');
+        @endphp
+
         <div class="mb-3">
-            <label for="roles">Roles <span class="text-danger">*</span></label>
-            <select name="roles[]" id="roles" class="form-control" multiple required>
+            <label for="rol">Rol <span class="text-danger">*</span></label>
+            <select name="rol" id="rol" class="form-control" required {{ $isAdmin ? '' : 'disabled' }}>
                 @foreach ($roles as $rol)
-                <option value="{{ $rol->id }}"
-                    {{ $usuario->roles->pluck('id')->contains($rol->id) ? 'selected' : '' }}>
-                    {{ $rol->name }} {{-- ✅ corregido: antes era $rol->nombre --}}
+                <option value="{{ $rol->id }}" {{ $usuario->roles->pluck('id')->contains($rol->id) ? 'selected' : '' }}>
+                    {{ $rol->name }}
                 </option>
                 @endforeach
             </select>
-            <small class="form-text text-muted">
-                Usa <b>Ctrl</b> (o <b>Cmd</b> en Mac) para seleccionar múltiples roles.
-            </small>
+            @if(!$isAdmin)
+                <input type="hidden" name="rol" value="{{ $usuario->roles->first()->id ?? '' }}">
+            @endif
         </div>
 
+        @php
+            $isEditingSelf = auth()->user()->id === $usuario->id;
+        @endphp
+
+        @if($isAdmin || !$isEditingSelf)
         <div class="form-check mb-3">
             <input type="hidden" name="activo" value="0">
             <input type="checkbox" name="activo" class="form-check-input" id="activo" value="1"
                    {{ old('activo', $usuario->activo) ? 'checked' : '' }}>
             <label class="form-check-label" for="activo">Activo</label>
         </div>
+        @else
+            <input type="hidden" name="activo" value="{{ $usuario->activo ? '1' : '0' }}">
+        @endif
 
         <button type="submit" class="btn btn-primary">Actualizar</button>
         <a href="{{ route('usuarios.index') }}" class="btn btn-secondary">Cancelar</a>
@@ -101,11 +112,26 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const nombreInput = document.getElementById('nombre');
+    const apellidoInput = document.getElementById('apellido');
     const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const rolInput = document.getElementById('rol');
     const submitBtn = document.querySelector('button[type="submit"]');
+    const form = document.querySelector('form');
     const nombreOriginal = "{{ $usuario->nombre }}";
     const emailOriginal = "{{ $usuario->email }}";
     let timer = null;
+
+    function validarFormulario() {
+        const nombre = nombreInput.value.trim();
+        const apellido = apellidoInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        const rol = rolInput.value;
+
+        const todosCompletos = nombre && apellido && email && rol && (!password || password.length >= 8);
+        submitBtn.disabled = !todosCompletos;
+    }
 
     function validarCampo(input, tipo, original) {
         const valor = input.value.trim();
@@ -114,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
         if (!valor || valor.toLowerCase() === original.toLowerCase()) {
             errorDiv.style.display = 'none';
             errorDiv.innerText = '';
-            submitBtn.disabled = false;
+            validarFormulario();
             return;
         }
 
@@ -129,13 +155,13 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(res => res.json())
         .then(data => {
             if (data.existe) {
-                errorDiv.innerText = `El ${tipo} ya está registrado.`;
+                errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-1"></i>⚠️ El ${tipo} ya está registrado.`;
                 errorDiv.style.display = 'block';
                 submitBtn.disabled = true;
             } else {
                 errorDiv.innerText = '';
                 errorDiv.style.display = 'none';
-                submitBtn.disabled = false;
+                validarFormulario();
             }
         });
     }
@@ -149,6 +175,27 @@ document.addEventListener('DOMContentLoaded', function () {
         clearTimeout(timer);
         timer = setTimeout(() => validarCampo(emailInput, 'email', emailOriginal), 400);
     });
+
+    [apellidoInput, passwordInput, rolInput].forEach(input => {
+        input.addEventListener('change', validarFormulario);
+        input.addEventListener('input', validarFormulario);
+    });
+
+    form.addEventListener('submit', function (e) {
+        const nombre = nombreInput.value.trim();
+        const apellido = apellidoInput.value.trim();
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+        const rol = rolInput.value;
+
+        if (!nombre) { e.preventDefault(); alert('⚠️ Por favor, completa el campo Nombre'); nombreInput.focus(); return false; }
+        if (!apellido) { e.preventDefault(); alert('⚠️ Por favor, completa el campo Apellido'); apellidoInput.focus(); return false; }
+        if (!email) { e.preventDefault(); alert('⚠️ Por favor, completa el campo Email'); emailInput.focus(); return false; }
+        if (password && password.length < 8) { e.preventDefault(); alert('⚠️ La contraseña debe tener al menos 8 caracteres'); passwordInput.focus(); return false; }
+        if (!rol) { e.preventDefault(); alert('⚠️ Por favor, selecciona un Rol'); rolInput.focus(); return false; }
+    });
+
+    validarFormulario();
 });
 </script>
 @endsection

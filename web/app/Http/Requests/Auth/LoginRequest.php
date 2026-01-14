@@ -44,8 +44,20 @@ class LoginRequest extends FormRequest
         if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
+            // Mensaje claro y en español para mejor usabilidad
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'Correo o contraseña incorrectos. Verifica tus datos e inténtalo nuevamente.',
+            ]);
+        }
+
+        // Validar que la cuenta esté activa
+        $user = Auth::user();
+        if ($user && $user->activo === false) {
+            Auth::logout();
+            RateLimiter::clear($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'email' => 'Tu cuenta está inactiva. Contacta al administrador.',
             ]);
         }
 

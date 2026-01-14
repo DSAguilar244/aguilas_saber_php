@@ -52,8 +52,46 @@
             </select>
         </div>
 
-        <button type="submit" class="btn btn-primary">Actualizar</button>
+        <button type="submit" class="btn btn-primary" id="actualizar-btn">Actualizar</button>
         <a href="{{ route('recursos.index') }}" class="btn btn-secondary">Cancelar</a>
     </form>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const nombreInput = document.getElementById('nombre');
+    const cantidadInput = document.getElementById('cantidad');
+    const estadoInput = document.getElementById('estado');
+    const actualizarBtn = document.getElementById('actualizar-btn');
+    const form = document.querySelector('form');
+
+    function validarFormulario() {
+        const nombre = nombreInput.value.trim();
+        const cantidad = cantidadInput.value;
+        const estado = estadoInput.value;
+
+        const todosCompletos = nombre && cantidad !== '' && cantidad >= 0 && estado;
+        actualizarBtn.disabled = !todosCompletos;
+    }
+
+    [nombreInput, cantidadInput, estadoInput].forEach(input => {
+        input.addEventListener('change', validarFormulario);
+        input.addEventListener('input', validarFormulario);
+    });
+
+    form.addEventListener('submit', function (e) {
+        const nombre = nombreInput.value.trim();
+        const cantidad = cantidadInput.value;
+        const estado = estadoInput.value;
+
+        if (!nombre) { e.preventDefault(); alert('⚠️ Por favor, completa el campo Nombre'); nombreInput.focus(); return false; }
+        if (cantidad === '' || cantidad < 0) { e.preventDefault(); alert('⚠️ La cantidad debe ser 0 o mayor'); cantidadInput.focus(); return false; }
+        if (!estado) { e.preventDefault(); alert('⚠️ Por favor, selecciona un Estado'); estadoInput.focus(); return false; }
+    });
+
+    validarFormulario();
+});
+</script>
 @endsection

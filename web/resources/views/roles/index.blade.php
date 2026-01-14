@@ -6,9 +6,8 @@
 
 @section('content')
 <div class="container">
-    <h2>Roles</h2>
-
-    <a href="{{ route('roles.create') }}" class="btn btn-primary mb-3">Agregar Rol</a>
+    <h2>Roles del Sistema</h2>
+    <p class="text-muted">Gestiona los permisos de los roles existentes</p>
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
@@ -21,7 +20,7 @@
 
     {{-- 📋 Tabla de roles --}}
     <table class="table table-bordered">
-        <thead>
+        <thead class="table-dark">
             <tr>
                 <th>Nombre</th>
                 <th>Descripción</th>
@@ -34,11 +33,9 @@
                 <td data-label="Nombre">{{ $role->name }}</td> {{-- ✅ Usar 'name' --}}
                 <td data-label="Descripción">{{ $role->descripcion }}</td>
                 <td data-label="Acciones">
-                    <a href="{{ route('roles.edit', $role) }}" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
-                    <form action="{{ route('roles.destroy', $role) }}" method="POST" style="display:inline-block;">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm w-auto">🗑️ Eliminar</button>
-                    </form>
+                    <a href="{{ route('roles.edit', $role) }}" class="btn btn-warning btn-sm w-auto">
+                        <i class="fas fa-edit"></i> Editar Permisos
+                    </a>
                 </td>
             </tr>
             @empty
@@ -51,7 +48,7 @@
 
     {{-- 📄 Paginación --}}
     <div class="d-flex justify-content-center" id="roles-paginacion">
-        {{ $roles->links() }}
+        {{ $roles->links('vendor.pagination.custom') }}
     </div>
 </div>
 @endsection
@@ -87,11 +84,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <td data-label="Nombre">${role.name}</td> <!-- ✅ corregido -->
                                 <td data-label="Descripción">${role.descripcion ?? ''}</td>
                                 <td data-label="Acciones">
-                                    <a href="/roles/${role.id}/edit" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
+                                    <a href="/roles/${role.id}/edit" class="btn btn-warning btn-sm w-auto"><i class="fas fa-edit"></i> Editar</a>
                                     <form method="POST" action="/roles/${role.id}" style="display:inline-block;">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="btn btn-danger btn-sm w-auto">🗑️ Eliminar</button>
+                                        <button type="submit" class="btn btn-danger btn-sm w-auto"><i class="fas fa-trash"></i> Eliminar</button>
                                     </form>
                                 </td>
                             </tr>`;

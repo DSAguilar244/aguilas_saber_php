@@ -36,6 +36,13 @@ class RecursoController extends Controller
             'descripcion' => 'nullable|string|max:255',
             'cantidad'    => 'required|integer|min:0',
             'estado'      => 'required|in:bueno,regular,deteriorado',
+        ], [
+            'nombre.required' => 'El nombre del recurso es obligatorio.',
+            'cantidad.required' => 'La cantidad es obligatoria.',
+            'cantidad.integer' => 'La cantidad debe ser un número entero.',
+            'cantidad.min' => 'La cantidad no puede ser negativa.',
+            'estado.required' => 'Debes seleccionar un estado.',
+            'estado.in' => 'El estado debe ser: bueno, regular o deteriorado.',
         ]);
 
         // Validación personalizada para evitar duplicados antes de llegar al SQL
@@ -50,7 +57,14 @@ class RecursoController extends Controller
         }
 
         // Todo válido, se guarda
-        Recurso::create($request->only('nombre', 'descripcion', 'cantidad', 'estado'));
+        $recurso = Recurso::create($request->only('nombre', 'descripcion', 'cantidad', 'estado'));
+
+        AuditoriaController::registrar('recursos', 'crear', $recurso->id, [
+            'nombre' => $recurso->nombre,
+            'estado' => $recurso->estado,
+            'cantidad' => $recurso->cantidad,
+        ]);
+
         return redirect()->route('recursos.index')->with('success', 'Recurso creado correctamente');
     }
 
@@ -67,6 +81,13 @@ class RecursoController extends Controller
             'descripcion' => 'nullable|string|max:255',
             'cantidad'    => 'required|integer|min:0',
             'estado'      => 'required|in:bueno,regular,deteriorado',
+        ], [
+            'nombre.required' => 'El nombre del recurso es obligatorio.',
+            'cantidad.required' => 'La cantidad es obligatoria.',
+            'cantidad.integer' => 'La cantidad debe ser un número entero.',
+            'cantidad.min' => 'La cantidad no puede ser negativa.',
+            'estado.required' => 'Debes seleccionar un estado.',
+            'estado.in' => 'El estado debe ser: bueno, regular o deteriorado.',
         ]);
 
         // Validación personalizada excluyendo el ID actual
@@ -82,6 +103,12 @@ class RecursoController extends Controller
 
         $recurso = Recurso::findOrFail($id);
         $recurso->update($request->only('nombre', 'descripcion', 'cantidad', 'estado'));
+
+        AuditoriaController::registrar('recursos', 'actualizar', $recurso->id, [
+            'nombre' => $recurso->nombre,
+            'estado' => $recurso->estado,
+            'cantidad' => $recurso->cantidad,
+        ]);
 
         return redirect()->route('recursos.index')->with('success', 'Recurso actualizado correctamente');
     }
@@ -115,7 +142,14 @@ class RecursoController extends Controller
     public function destroy($id)
     {
         $recurso = Recurso::findOrFail($id);
+        $detalles = [
+            'nombre' => $recurso->nombre,
+            'estado' => $recurso->estado,
+            'cantidad' => $recurso->cantidad,
+        ];
         $recurso->delete();
+
+        AuditoriaController::registrar('recursos', 'eliminar', $recurso->id, $detalles);
 
         return redirect()->route('recursos.index')->with('success', 'Recurso eliminado correctamente');
     }

@@ -8,7 +8,16 @@
 <div class="container">
     <h2>Préstamos</h2>
 
+    @php
+        $isAdmin = auth()->user()->roles->contains('name', 'admin');
+        $canCreate = $isAdmin || auth()->user()->hasPermissionTo('prestamos.crear');
+        $canEdit = $isAdmin || auth()->user()->hasPermissionTo('prestamos.editar');
+        $canDelete = $isAdmin || auth()->user()->hasPermissionTo('prestamos.eliminar');
+    @endphp
+
+    @if($canCreate)
     <a href="{{ route('prestamos.create') }}" class="btn btn-primary mb-3">Agregar Préstamo</a>
+    @endif
 
     @if(session('success'))
     <div class="alert alert-success">{{ session('success') }}</div>
@@ -21,7 +30,7 @@
 
     {{-- 📋 Tabla principal --}}
     <table class="table table-bordered">
-        <thead>
+        <thead class="table-dark">
             <tr>
                 <th>Código</th>
                 <th>Usuario</th>
@@ -48,11 +57,48 @@
                     @endif
                 </td>
                 <td data-label="Acciones">
-                    <a href="{{ route('prestamos.edit', $prestamo) }}" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
-                    <form action="{{ route('prestamos.destroy', $prestamo) }}" method="POST" style="display:inline-block;">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="btn btn-danger btn-sm w-auto">🗑️ Eliminar</button>
-                    </form>
+                    @if($canEdit)
+                    <a href="{{ route('prestamos.edit', $prestamo) }}" class="btn btn-warning btn-sm w-auto"><i class="fas fa-edit"></i> Editar</a>
+                    @endif
+                    
+                    @if($canDelete)
+                    <button type="button" class="btn btn-danger btn-sm w-auto" data-bs-toggle="modal" data-bs-target="#modalEliminar{{ $prestamo->id }}">
+                        <i class="fas fa-trash"></i> Eliminar
+                    </button>
+                    @endif
+                    
+                    {{-- Modal de confirmación --}}
+                    <div class="modal fade" id="modalEliminar{{ $prestamo->id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header bg-danger text-white">
+                                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Confirmar Eliminación</h5>
+                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body text-center py-4">
+                                    <i class="fas fa-archive fa-4x text-danger mb-3"></i>
+                                    <h5 class="mb-3">¿Estás seguro de eliminar este préstamo?</h5>
+                                    <p class="text-muted mb-0">
+                                        <strong>Código: {{ $prestamo->codigo }}</strong><br>
+                                        <small>Usuario: {{ $prestamo->usuario->nombre ?? '' }} {{ $prestamo->usuario->apellido ?? '' }}</small><br>
+                                        <small>Recurso: {{ $prestamo->recurso->nombre ?? '' }}</small>
+                                    </p>
+                                    <p class="text-danger mt-2"><small>Esta acción no se puede deshacer.</small></p>
+                                </div>
+                                <div class="modal-footer justify-content-center">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                        <i class="fas fa-times me-1"></i>Cancelar
+                                    </button>
+                                    <form action="{{ route('prestamos.destroy', $prestamo) }}" method="POST" class="d-inline">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-trash me-1"></i>Sí, Eliminar
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </td>
             </tr>
             @empty
@@ -65,7 +111,7 @@
 
     {{-- 📄 Paginación --}}
     <div class="d-flex justify-content-center" id="prestamos-paginacion">
-        {{ $prestamos->links() }}
+        {{ $prestamos->links('vendor.pagination.custom') }}
     </div>
 </div>
 @endsection
@@ -114,11 +160,11 @@ document.addEventListener('DOMContentLoaded', function () {
                                 <td data-label="Fecha Devolución">${prestamo.fecha_devolucion}</td>
                                 <td data-label="Estado">${estadoBadge}</td>
                                 <td data-label="Acciones">
-                                    <a href="/prestamos/${prestamo.id}/edit" class="btn btn-warning btn-sm w-auto">✏️ Editar</a>
+                                    <a href="/prestamos/${prestamo.id}/edit" class="btn btn-warning btn-sm w-auto"><i class="fas fa-edit"></i> Editar</a>
                                     <form method="POST" action="/prestamos/${prestamo.id}" style="display:inline-block;">
                                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                         <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="btn btn-danger btn-sm w-auto">🗑️ Eliminar</button>
+                                        <button type="submit" class="btn btn-danger btn-sm w-auto"><i class="fas fa-trash"></i> Eliminar</button>
                                     </form>
                                 </td>
                             </tr>`;

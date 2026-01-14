@@ -48,9 +48,30 @@ class PrestamoController extends Controller
             'fecha_prestamo'    => 'required|date',
             'fecha_devolucion'  => 'nullable|date|after_or_equal:fecha_prestamo',
             'estado'            => 'required|in:pendiente,devuelto,no devuelto',
+        ], [
+            'codigo.required' => 'El código del préstamo es obligatorio.',
+            'codigo.unique' => 'Este código de préstamo ya existe.',
+            'usuario_id.required' => 'Debes seleccionar un usuario.',
+            'usuario_id.exists' => 'El usuario seleccionado no es válido.',
+            'recurso_id.required' => 'Debes seleccionar un recurso.',
+            'recurso_id.exists' => 'El recurso seleccionado no es válido.',
+            'fecha_prestamo.required' => 'La fecha de préstamo es obligatoria.',
+            'fecha_prestamo.date' => 'La fecha de préstamo debe ser una fecha válida.',
+            'fecha_devolucion.date' => 'La fecha de devolución debe ser una fecha válida.',
+            'fecha_devolucion.after_or_equal' => 'La fecha de devolución debe ser igual o posterior a la fecha de préstamo.',
+            'estado.required' => 'Debes seleccionar un estado.',
+            'estado.in' => 'El estado debe ser: pendiente, devuelto o no devuelto.',
         ]);
 
-        Prestamo::create($request->all());
+        $prestamo = Prestamo::create($request->all());
+
+        AuditoriaController::registrar('prestamos', 'crear', $prestamo->id, [
+            'codigo' => $prestamo->codigo,
+            'usuario_id' => $prestamo->usuario_id,
+            'recurso_id' => $prestamo->recurso_id,
+            'estado' => $prestamo->estado,
+        ]);
+
         return redirect()->route('prestamos.index')->with('success', 'Préstamo creado correctamente');
     }
 
@@ -77,10 +98,30 @@ class PrestamoController extends Controller
             'fecha_prestamo'    => 'required|date',
             'fecha_devolucion'  => 'nullable|date|after_or_equal:fecha_prestamo',
             'estado'            => 'required|in:pendiente,devuelto,no devuelto',
+        ], [
+            'codigo.required' => 'El código del préstamo es obligatorio.',
+            'codigo.unique' => 'Este código de préstamo ya existe.',
+            'usuario_id.required' => 'Debes seleccionar un usuario.',
+            'usuario_id.exists' => 'El usuario seleccionado no es válido.',
+            'recurso_id.required' => 'Debes seleccionar un recurso.',
+            'recurso_id.exists' => 'El recurso seleccionado no es válido.',
+            'fecha_prestamo.required' => 'La fecha de préstamo es obligatoria.',
+            'fecha_prestamo.date' => 'La fecha de préstamo debe ser una fecha válida.',
+            'fecha_devolucion.date' => 'La fecha de devolución debe ser una fecha válida.',
+            'fecha_devolucion.after_or_equal' => 'La fecha de devolución debe ser igual o posterior a la fecha de préstamo.',
+            'estado.required' => 'Debes seleccionar un estado.',
+            'estado.in' => 'El estado debe ser: pendiente, devuelto o no devuelto.',
         ]);
 
         $prestamo = Prestamo::findOrFail($id);
         $prestamo->update($request->all());
+
+        AuditoriaController::registrar('prestamos', 'actualizar', $prestamo->id, [
+            'codigo' => $prestamo->codigo,
+            'usuario_id' => $prestamo->usuario_id,
+            'recurso_id' => $prestamo->recurso_id,
+            'estado' => $prestamo->estado,
+        ]);
 
         return redirect()->route('prestamos.index')->with('success', 'Préstamo actualizado correctamente');
     }
@@ -123,7 +164,15 @@ class PrestamoController extends Controller
     public function destroy($id)
     {
         $prestamo = Prestamo::findOrFail($id);
+        $detalles = [
+            'codigo' => $prestamo->codigo,
+            'usuario_id' => $prestamo->usuario_id,
+            'recurso_id' => $prestamo->recurso_id,
+            'estado' => $prestamo->estado,
+        ];
         $prestamo->delete();
+
+        AuditoriaController::registrar('prestamos', 'eliminar', $prestamo->id, $detalles);
 
         return redirect()->route('prestamos.index')->with('success', 'Préstamo eliminado correctamente');
     }

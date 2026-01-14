@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Login - Águilas del Saber</title>
+    <title>Login - Las Águilas del Saber</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <link rel="icon" href="{{ asset('static/img/fondo_aguilas_saber.png') }}" type="image/x-icon">

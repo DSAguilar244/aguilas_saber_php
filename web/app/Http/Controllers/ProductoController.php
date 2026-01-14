@@ -53,6 +53,18 @@ class ProductoController extends Controller
             'fecha_entrada'  => 'required|date',
             'fecha_salida'   => 'required|date|after_or_equal:fecha_entrada',
             'cantidad'       => 'required|integer|min:0',
+        ], [
+            'nombre.required' => 'El nombre del producto es obligatorio.',
+            'estado.required' => 'Debes seleccionar un estado.',
+            'estado.in' => 'El estado debe ser: disponible o agotado.',
+            'fecha_entrada.required' => 'La fecha de entrada es obligatoria.',
+            'fecha_entrada.date' => 'La fecha de entrada debe ser una fecha válida.',
+            'fecha_salida.required' => 'La fecha de salida es obligatoria.',
+            'fecha_salida.date' => 'La fecha de salida debe ser una fecha válida.',
+            'fecha_salida.after_or_equal' => 'La fecha de salida debe ser igual o posterior a la fecha de entrada.',
+            'cantidad.required' => 'La cantidad es obligatoria.',
+            'cantidad.integer' => 'La cantidad debe ser un número entero.',
+            'cantidad.min' => 'La cantidad no puede ser negativa.',
         ]);
 
         $validator->after(function ($validator) use ($request) {
@@ -65,7 +77,13 @@ class ProductoController extends Controller
             return back()->withErrors($validator)->withInput();
         }
 
-        Producto::create($request->all());
+        $producto = Producto::create($request->all());
+
+        AuditoriaController::registrar('productos', 'crear', $producto->id, [
+            'nombre' => $producto->nombre,
+            'estado' => $producto->estado,
+            'cantidad' => $producto->cantidad,
+        ]);
 
         return redirect()->route('productos.index')->with('success', 'Producto creado correctamente');
     }
@@ -90,6 +108,18 @@ class ProductoController extends Controller
             'fecha_entrada'  => 'required|date',
             'fecha_salida'   => 'required|date|after_or_equal:fecha_entrada',
             'cantidad'       => 'required|integer|min:0',
+        ], [
+            'nombre.required' => 'El nombre del producto es obligatorio.',
+            'estado.required' => 'Debes seleccionar un estado.',
+            'estado.in' => 'El estado debe ser: disponible o agotado.',
+            'fecha_entrada.required' => 'La fecha de entrada es obligatoria.',
+            'fecha_entrada.date' => 'La fecha de entrada debe ser una fecha válida.',
+            'fecha_salida.required' => 'La fecha de salida es obligatoria.',
+            'fecha_salida.date' => 'La fecha de salida debe ser una fecha válida.',
+            'fecha_salida.after_or_equal' => 'La fecha de salida debe ser igual o posterior a la fecha de entrada.',
+            'cantidad.required' => 'La cantidad es obligatoria.',
+            'cantidad.integer' => 'La cantidad debe ser un número entero.',
+            'cantidad.min' => 'La cantidad no puede ser negativa.',
         ]);
 
         $validator->after(function ($validator) use ($request, $id) {
@@ -108,13 +138,26 @@ class ProductoController extends Controller
         $producto = Producto::findOrFail($id);
         $producto->update($request->all());
 
+        AuditoriaController::registrar('productos', 'actualizar', $producto->id, [
+            'nombre' => $producto->nombre,
+            'estado' => $producto->estado,
+            'cantidad' => $producto->cantidad,
+        ]);
+
         return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente');
     }
 
     public function destroy($id)
     {
         $producto = Producto::findOrFail($id);
+        $detalles = [
+            'nombre' => $producto->nombre,
+            'estado' => $producto->estado,
+            'cantidad' => $producto->cantidad,
+        ];
         $producto->delete();
+
+        AuditoriaController::registrar('productos', 'eliminar', $producto->id, $detalles);
 
         return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente');
     }

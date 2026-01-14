@@ -67,18 +67,36 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const nombreInput = document.getElementById('nombre');
+    const estadoInput = document.getElementById('estado');
+    const fechaEntradaInput = document.getElementById('fecha_entrada');
+    const fechaSalidaInput = document.getElementById('fecha_salida');
+    const cantidadInput = document.getElementById('cantidad');
     const errorDiv = document.getElementById('nombre-error');
     const actualizarBtn = document.getElementById('actualizar-btn');
+    const form = document.querySelector('form');
     const nombreOriginal = "{{ $producto->nombre }}".toLowerCase();
     let timer = null;
+
+    function validarFormulario() {
+        const nombre = nombreInput.value.trim();
+        const estado = estadoInput.value;
+        const fechaEntrada = fechaEntradaInput.value;
+        const fechaSalida = fechaSalidaInput.value;
+        const cantidad = cantidadInput.value;
+
+        const todosCompletos = nombre && estado && fechaEntrada && fechaSalida && cantidad !== '' && cantidad >= 0;
+        actualizarBtn.disabled = !todosCompletos;
+    }
 
     nombreInput.addEventListener('input', function () {
         const nombre = nombreInput.value.trim().toLowerCase();
         clearTimeout(timer);
 
+        validarFormulario();
+
         if (!nombre || nombre === nombreOriginal) {
             errorDiv.style.display = 'none';
-            actualizarBtn.disabled = false;
+            validarFormulario();
             return;
         }
 
@@ -87,24 +105,53 @@ document.addEventListener('DOMContentLoaded', function () {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' 
                 },
                 body: JSON.stringify({ nombre })
             })
             .then(res => res.json())
             .then(data => {
                 if (data.existe) {
-                    errorDiv.innerText = '⚠️ Este producto ya existe';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>⚠️ Este producto ya existe';
                     errorDiv.style.display = 'block';
                     actualizarBtn.disabled = true;
                 } else {
-                    errorDiv.innerText = '';
                     errorDiv.style.display = 'none';
-                    actualizarBtn.disabled = false;
+                    validarFormulario();
                 }
             });
         }, 500);
     });
+
+    [estadoInput, fechaEntradaInput, fechaSalidaInput, cantidadInput].forEach(input => {
+        input.addEventListener('change', validarFormulario);
+        input.addEventListener('input', validarFormulario);
+    });
+
+    form.addEventListener('submit', function (e) {
+        const nombre = nombreInput.value.trim();
+        const estado = estadoInput.value;
+        const fechaEntrada = fechaEntradaInput.value;
+        const fechaSalida = fechaSalidaInput.value;
+        const cantidad = cantidadInput.value;
+
+        if (!nombre) { e.preventDefault(); alert('⚠️ Por favor, completa el campo Nombre'); nombreInput.focus(); return false; }
+        if (!estado) { e.preventDefault(); alert('⚠️ Por favor, selecciona un Estado'); estadoInput.focus(); return false; }
+        if (!fechaEntrada) { e.preventDefault(); alert('⚠️ Por favor, completa la Fecha de Entrada'); fechaEntradaInput.focus(); return false; }
+        if (!fechaSalida) { e.preventDefault(); alert('⚠️ Por favor, completa la Fecha de Salida'); fechaSalidaInput.focus(); return false; }
+        if (cantidad === '' || cantidad < 0) { e.preventDefault(); alert('⚠️ La cantidad debe ser 0 o mayor'); cantidadInput.focus(); return false; }
+
+        const entrada = new Date(fechaEntrada);
+        const salida = new Date(fechaSalida);
+        if (salida < entrada) {
+            e.preventDefault();
+            alert('⚠️ La fecha de salida debe ser igual o posterior a la fecha de entrada');
+            fechaSalidaInput.focus();
+            return false;
+        }
+    });
+
+    validarFormulario();
 });
 </script>
 @endsection

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
+
     public function index(Request $request)
     {
         $query = Role::query();
@@ -52,9 +53,16 @@ class RoleController extends Controller
         $request->validate([
             'name' => 'required|unique:roles,name',
             'descripcion' => 'nullable|string',
+        ], [
+            'name.required' => 'El nombre del rol es obligatorio.',
+            'name.unique' => 'Este nombre de rol ya existe.',
         ]);
 
-        Role::create($request->only('name', 'descripcion'));
+        $role = Role::create($request->only('name', 'descripcion'));
+
+        AuditoriaController::registrar('roles', 'crear', $role->id, [
+            'name' => $role->name,
+        ]);
 
         return redirect()->route('roles.index')->with('success', 'Rol creado correctamente');
     }
@@ -67,7 +75,7 @@ class RoleController extends Controller
 
     public function edit($id)
     {
-        $role = Role::findOrFail($id);
+        $role = Role::with('permissions')->findOrFail($id);
         return view('roles.edit', compact('role'));
     }
 
@@ -76,18 +84,37 @@ class RoleController extends Controller
         $request->validate([
             'name' => 'required|unique:roles,name,' . $id,
             'descripcion' => 'nullable|string',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'string|exists:permissions,name',
+        ], [
+            'name.required' => 'El nombre del rol es obligatorio.',
+            'name.unique' => 'Este nombre de rol ya existe.',
         ]);
 
         $role = Role::findOrFail($id);
         $role->update($request->only('name', 'descripcion'));
 
-        return redirect()->route('roles.index')->with('success', 'Rol actualizado correctamente');
+        // Sincronizar permisos (solo para roles que no sean admin)
+        if ($role->name !== 'admin') {
+            $permissions = $request->input('permissions', []);
+            $role->syncPermissions($permissions);
+        }
+
+        AuditoriaController::registrar('roles', 'actualizar', $role->id, [
+            'name' => $role->name,
+            'permisos' => $request->input('permissions', []),
+        ]);
+
+        return redirect()->route('roles.index')->with('success', 'Rol y permisos actualizados correctamente');
     }
 
     public function destroy($id)
     {
         $role = Role::findOrFail($id);
+        $detalles = ['name' => $role->name];
         $role->delete();
+
+        AuditoriaController::registrar('roles', 'eliminar', $role->id, $detalles);
 
         return redirect()->route('roles.index')->with('success', 'Rol eliminado correctamente');
     }

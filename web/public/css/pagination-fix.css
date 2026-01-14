@@ -1,0 +1,125 @@
+/* ================================================
+   SISTEMA DE PAGINACIÓN PERSONALIZADO
+   ================================================ */
+
+.custom-pagination-wrapper {
+    margin: 30px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.custom-pagination {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.custom-page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #dc3545;
+    background-color: #fff;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.custom-page-btn:hover:not(.disabled):not(.active) {
+    background-color: #dc3545;
+    color: #fff;
+    border-color: #dc3545;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+
+.custom-page-btn.active {
+    background-color: #dc3545;
+    color: #fff;
+    border-color: #dc3545;
+    cursor: default;
+    box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
+}
+
+.custom-page-btn.disabled {
+    background-color: #f8f9fa;
+    color: #adb5bd;
+    border-color: #dee2e6;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.custom-page-dots {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    height: 38px;
+    font-weight: 600;
+    color: #6c757d;
+}
+
+.custom-pagination-info {
+    font-size: 14px;
+    color: #6c757d;
+    font-weight: 500;
+    text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .custom-pagination {
+        gap: 0.3rem;
+    }
+    
+    .custom-page-btn {
+        min-width: 34px;
+        height: 34px;
+        padding: 0 8px;
+        font-size: 13px;
+    }
+    
+    .custom-page-dots {
+        min-width: 34px;
+        height: 34px;
+    }
+    
+    .custom-pagination-info {
+        font-size: 12px;
+    }
+}
+
+/* Animar los iconos de Font Awesome */
+.custom-page-btn i {
+    font-size: 14px;
+}
+
+.custom-page-btn:hover:not(.disabled) i {
+    animation: bounceIcon 0.5s ease;
+}
+
+@keyframes bounceIcon {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(3px); }
+}
+
+.custom-page-btn:first-child:hover:not(.disabled) i,
+.custom-page-btn:nth-child(2):hover:not(.disabled) i {
+    animation: bounceIconLeft 0.5s ease;
+}
+
+@keyframes bounceIconLeft {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-3px); }
+}

@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="home-header">
-        <h1 class="fade-up">Bienvenido a Aguilas del Saber</h1>
+        <h1 class="fade-up">Bienvenido a Las Águilas del Saber</h1>
         <p class="subtext">Una plataforma integral para gestionar usuarios, préstamos, productos y más de forma eficiente.</p>
     </div>
 
@@ -17,8 +17,10 @@
                 ['icon' => 'fas fa-archive', 'color' => 'success', 'title' => 'Gestión de Préstamos', 'text' => 'Supervisa los préstamos realizados.', 'href' => route('prestamos.index')],
                 ['icon' => 'fas fa-shopping-cart', 'color' => 'danger', 'title' => 'Gestión de Productos', 'text' => 'Organiza tu inventario disponible.', 'href' => route('productos.index')],
                 ['icon' => 'fas fa-database', 'color' => 'info', 'title' => 'Recursos', 'text' => 'Controla y clasifica los recursos.', 'href' => route('recursos.index')],
-                ['icon' => 'fas fa-user-shield', 'color' => 'dark', 'title' => 'Gestión de Roles', 'text' => 'Administra roles y permisos de usuarios.', 'href' => route('roles.index')],
             ];
+            if (auth()->check() && auth()->user()->roles->contains('name', 'admin')) {
+                $cards[] = ['icon' => 'fas fa-user-shield', 'color' => 'dark', 'title' => 'Gestión de Roles', 'text' => 'Administra roles y permisos de usuarios.', 'href' => route('roles.index')];
+            }
         @endphp
 
         @foreach ($cards as $card)

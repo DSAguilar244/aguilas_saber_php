@@ -65,17 +65,41 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const nombreInput = document.getElementById('nombre');
-    const errorDiv = document.getElementById('nombre-error');
+    const estadoInput = document.getElementById('estado');
+    const fechaEntradaInput = document.getElementById('fecha_entrada');
+    const fechaSalidaInput = document.getElementById('fecha_salida');
+    const cantidadInput = document.getElementById('cantidad');
     const guardarBtn = document.getElementById('guardar-btn');
+    const errorDiv = document.getElementById('nombre-error');
+    const form = document.querySelector('form');
     let timer = null;
 
+    // Función para validar todos los campos
+    function validarFormulario() {
+        const nombre = nombreInput.value.trim();
+        const estado = estadoInput.value;
+        const fechaEntrada = fechaEntradaInput.value;
+        const fechaSalida = fechaSalidaInput.value;
+        const cantidad = cantidadInput.value;
+
+        const todosCamposCompletos = nombre && estado && fechaEntrada && fechaSalida && cantidad !== '' && cantidad >= 0;
+        
+        // Solo habilitar si todos los campos están completos y no hay error de nombre duplicado
+        if (todosCamposCompletos && errorDiv.style.display === 'none') {
+            guardarBtn.disabled = false;
+        } else {
+            guardarBtn.disabled = true;
+        }
+    }
+
+    // Validar nombre en tiempo real
     nombreInput.addEventListener('input', function () {
         const nombre = nombreInput.value.trim();
         clearTimeout(timer);
 
         if (!nombre) {
             errorDiv.style.display = 'none';
-            guardarBtn.disabled = false;
+            validarFormulario();
             return;
         }
 
@@ -91,17 +115,75 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (data.existe) {
-                    errorDiv.innerText = '⚠️ Este producto ya existe';
+                    errorDiv.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>⚠️ Este producto ya existe';
                     errorDiv.style.display = 'block';
                     guardarBtn.disabled = true;
                 } else {
-                    errorDiv.innerText = '';
                     errorDiv.style.display = 'none';
-                    guardarBtn.disabled = false;
+                    validarFormulario();
                 }
             });
         }, 500);
     });
+
+    // Validar al cambiar otros campos
+    [estadoInput, fechaEntradaInput, fechaSalidaInput, cantidadInput].forEach(input => {
+        input.addEventListener('change', validarFormulario);
+        input.addEventListener('input', validarFormulario);
+    });
+
+    // Validar antes de enviar
+    form.addEventListener('submit', function (e) {
+        const nombre = nombreInput.value.trim();
+        const estado = estadoInput.value;
+        const fechaEntrada = fechaEntradaInput.value;
+        const fechaSalida = fechaSalidaInput.value;
+        const cantidad = cantidadInput.value;
+
+        if (!nombre) {
+            e.preventDefault();
+            alert('⚠️ Por favor, completa el campo Nombre');
+            nombreInput.focus();
+            return false;
+        }
+        if (!estado) {
+            e.preventDefault();
+            alert('⚠️ Por favor, selecciona un Estado');
+            estadoInput.focus();
+            return false;
+        }
+        if (!fechaEntrada) {
+            e.preventDefault();
+            alert('⚠️ Por favor, completa la Fecha de Entrada');
+            fechaEntradaInput.focus();
+            return false;
+        }
+        if (!fechaSalida) {
+            e.preventDefault();
+            alert('⚠️ Por favor, completa la Fecha de Salida');
+            fechaSalidaInput.focus();
+            return false;
+        }
+        if (!cantidad || cantidad < 0) {
+            e.preventDefault();
+            alert('⚠️ Por favor, completa la Cantidad (debe ser 0 o mayor)');
+            cantidadInput.focus();
+            return false;
+        }
+
+        // Validar que fecha salida sea >= fecha entrada
+        const entrada = new Date(fechaEntradaInput.value);
+        const salida = new Date(fechaSalidaInput.value);
+        if (salida < entrada) {
+            e.preventDefault();
+            alert('⚠️ La fecha de salida debe ser igual o posterior a la fecha de entrada');
+            fechaSalidaInput.focus();
+            return false;
+        }
+    });
+
+    // Validar al cargar (si hay datos viejos del formulario)
+    validarFormulario();
 });
 </script>
 @endsection

@@ -22,6 +22,13 @@ class Usuario extends Authenticatable implements JWTSubject
     ];
 
     /**
+     * The attributes that should be cast.
+     */
+    protected $casts = [
+        'activo' => 'boolean',
+    ];
+
+    /**
      * Hide sensitive fields
      */
     protected $hidden = [

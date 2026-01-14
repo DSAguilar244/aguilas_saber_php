@@ -61,10 +61,21 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const nombreInput = document.getElementById('nombre');
+    const cantidadInput = document.getElementById('cantidad');
+    const estadoInput = document.getElementById('estado');
     const errorDiv = document.getElementById('nombre-error');
     const guardarBtn = document.getElementById('guardar-btn');
-
+    const form = document.querySelector('form');
     let timer = null;
+
+    function validarFormulario() {
+        const nombre = nombreInput.value.trim();
+        const cantidad = cantidadInput.value;
+        const estado = estadoInput.value;
+
+        const todosCompletos = nombre && cantidad && cantidad >= 1 && estado;
+        guardarBtn.disabled = !todosCompletos;
+    }
 
     function verificarNombre(nombre) {
         fetch("{{ route('recursos.validarNombre') }}", {
@@ -78,32 +89,45 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(res => res.json())
         .then(data => {
             if (data.existe) {
-                errorDiv.innerText = 'Este recurso ya existe';
+                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle me-1"></i>⚠️ Este recurso ya existe';
                 errorDiv.style.display = 'block';
                 guardarBtn.disabled = true;
             } else {
-                errorDiv.innerText = '';
                 errorDiv.style.display = 'none';
-                guardarBtn.disabled = false;
+                validarFormulario();
             }
         });
     }
 
     nombreInput.addEventListener('input', function () {
         const nombre = nombreInput.value.trim();
-
-        // cancelar verificación anterior si está escribiendo rápido
         clearTimeout(timer);
+        validarFormulario();
 
         if (!nombre) {
             errorDiv.style.display = 'none';
-            guardarBtn.disabled = false;
             return;
         }
 
-        // esperar 500ms para no saturar la petición mientras escribe
         timer = setTimeout(() => verificarNombre(nombre), 500);
     });
+
+    [cantidadInput, estadoInput].forEach(input => {
+        input.addEventListener('change', validarFormulario);
+        input.addEventListener('input', validarFormulario);
+    });
+
+    form.addEventListener('submit', function (e) {
+        const nombre = nombreInput.value.trim();
+        const cantidad = cantidadInput.value;
+        const estado = estadoInput.value;
+
+        if (!nombre) { e.preventDefault(); alert('⚠️ Por favor, completa el campo Nombre'); nombreInput.focus(); return false; }
+        if (!cantidad || cantidad < 1) { e.preventDefault(); alert('⚠️ La cantidad debe ser al menos 1'); cantidadInput.focus(); return false; }
+        if (!estado) { e.preventDefault(); alert('⚠️ Por favor, selecciona un Estado'); estadoInput.focus(); return false; }
+    });
+
+    validarFormulario();
 });
 </script>
 @endsection
