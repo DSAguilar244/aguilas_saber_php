@@ -5,7 +5,7 @@
 @endsection
 
 @section('content')
-<h1 class="text-center mb-4">Dashboard - Águilas del Saber</h1>
+<h1 class="text-center mb-4">Dashboard - Las Águilas del Saber</h1>
 
 <div class="container">
     <div class="dashboard-row">
